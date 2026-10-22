@@ -2,7 +2,6 @@
 
 import { useId, useMemo, useState } from "react";
 import {
-  Rocket,
   Sparkles,
   CheckCircle2,
   ArrowRight,
@@ -12,18 +11,15 @@ import {
   CreditCard,
   Bot,
   Globe,
-  Terminal,
-  Copy,
   Check,
   Menu,
   X,
   ChevronRight,
-  Upload,
   Eye,
-  Cpu,
   Lock,
   Gauge,
   Send,
+  Mail,
 } from "lucide-react";
 
 /**
@@ -33,20 +29,8 @@ import {
  * - Top-right mini gradient app icon badge with matching knot
  * - Bottom flowing magenta/violet wave and glowing gradient nodes
  */
-const SynthetixLogo = ({ className = "w-12 h-12", customLogoUrl = null }) => {
+const SynthetixLogo = ({ className = "w-12 h-12" }) => {
   const uid = useId().replace(/:/g, "");
-
-  if (customLogoUrl) {
-    return (
-      // Blob previews from a local file picker cannot go through the image optimizer.
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={customLogoUrl}
-        alt="Synthetix Studio Logo"
-        className={`${className} object-contain rounded-lg`}
-      />
-    );
-  }
 
   return (
     <svg
@@ -188,7 +172,7 @@ const PORTFOLIO_PROJECTS = [
     clientType: 'Small Businesses & Sole Traders',
     description:
       'Turns rough, shorthand job notes into polished, itemised customer invoices in seconds. Built with Firebase Authentication, persistent cloud storage, and one-click print/PDF export.',
-    metrics: ['85% Faster Invoicing', 'Cloud Saved Clients', 'Instant PDF Print'],
+    metrics: ['Cloud Saved Clients', 'Instant PDF Print'],
     tech: ['Next.js', 'Firebase Auth', 'Firestore DB', 'Smart Note Parser'],
     accent: 'from-cyan-500 via-blue-500 to-indigo-600',
     previewFeatures: [
@@ -207,7 +191,7 @@ const PORTFOLIO_PROJECTS = [
     clientType: 'UK Construction & Engineering Firms',
     description:
       'Generates comprehensive, site-specific Risk Assessments and Method Statements (RAMS) in minutes instead of hours. Includes hazard matrices, PPE checklists, and Stripe subscription billing.',
-    metrics: ['UK HSE Aligned', '5-Min Document Build', 'Stripe Monetised'],
+    metrics: ['5-Min Document Build', 'Stripe Monetised'],
     tech: ['Next.js', 'Stripe Checkout', 'Firebase', 'PDF Engine'],
     accent: 'from-fuchsia-500 via-purple-600 to-indigo-600',
     previewFeatures: [
@@ -226,73 +210,111 @@ const PORTFOLIO_PROJECTS = [
     clientType: 'Local Businesses, Agencies & Startups',
     description:
       'Ultra-fast, mobile-first websites engineered to rank on Google and convert visitors into booked jobs. No bloated WordPress plugins—just pure Next.js performance and custom interactive tools.',
-    metrics: ['99/100 Speed Score', 'SEO & Local Authority', 'Built-in Quote Calculators'],
+    metrics: ['SEO & Local Authority', 'Built-in Quote Calculators'],
     tech: ['Next.js App Router', 'Tailwind CSS', 'Vercel Edge', 'CRM Webhooks'],
     accent: 'from-emerald-400 via-cyan-500 to-blue-600',
     previewFeatures: [
       'Custom interactive quote estimators that qualify leads before you even pick up the phone',
-      'Deployed on Vercel Global Edge network for sub-second page loads on mobile 4G/5G',
+      'Deployed on Vercel',
       'Optional AI receptionist & PBX-to-CRM call transcription integration',
       'Full custom domain configuration, SSL security, and ongoing studio support'
     ]
   }
 ];
 
+// Change this one string to update the VAT notice everywhere it is shown.
+const VAT_NOTICE = "No VAT to add — we're not VAT registered.";
+
+const CONTACT_EMAIL = "synthetix.studio1@gmail.com";
+
 const PROJECT_TYPES = [
   {
     id: 'website',
-    name: 'Bespoke Business Website',
-    desc: 'High-converting multi-page site, mobile-first, SEO-ready',
-    basePrice: 650,
-    weeks: '1 – 2 Weeks',
+    name: 'Business Website',
+    desc: '1–5 pages',
+    basePrice: 795,
     icon: Globe
+  },
+  {
+    id: 'larger-website',
+    name: 'Larger Website',
+    desc: '6–10 pages',
+    basePrice: 1295,
+    icon: Layers
   },
   {
     id: 'portal',
     name: 'Trade / Field Service Portal',
-    desc: 'Custom job sheets, engineer forms, signatures & automated emails',
-    basePrice: 950,
-    weeks: '2 – 3 Weeks',
+    desc: 'Job sheets, engineer forms, signatures, and automated emails',
+    basePrice: 1950,
     icon: FileSignature
-  },
-  {
-    id: 'webapp',
-    name: 'Custom Web Application',
-    desc: 'Interactive client portal, dashboards, or internal business tool',
-    basePrice: 1450,
-    weeks: '3 – 4 Weeks',
-    icon: Cpu
-  },
-  {
-    id: 'saas',
-    name: 'Full SaaS Product MVP',
-    desc: 'Multi-user software with logins, database & Stripe subscriptions',
-    basePrice: 2200,
-    weeks: '4 – 6 Weeks',
-    icon: Rocket
   }
 ];
 
 const ADDON_FEATURES = [
-  { id: 'auth', label: 'User Logins & Cloud Database (Firebase)', price: 350 },
-  { id: 'pdf', label: 'Digital Signatures & Branded PDF Generation', price: 250 },
-  { id: 'stripe', label: 'Stripe Online Payments / Subscriptions', price: 350 },
-  { id: 'ai', label: 'Smart AI Text Parsing / Workflow Automation', price: 400 },
-  { id: 'calculator', label: 'Interactive Customer Quote Calculator', price: 200 },
-  { id: 'hosting', label: 'Custom Domain, SSL & Vercel Edge Setup', price: 0, included: true }
+  { id: 'auth', label: 'Logins + cloud database', price: 395 },
+  { id: 'pdf', label: 'Digital signatures + branded PDFs', price: 295 },
+  { id: 'stripe', label: 'Stripe payments', price: 350 },
+  { id: 'ai', label: 'AI text parsing / automation', price: 450 },
+  { id: 'calculator', label: 'Quote calculator', price: 200 },
+  { id: 'setup', label: 'Domain, SSL & setup', price: 0, included: true }
 ];
+
+const CARE_PLANS = [
+  { id: 'none', label: 'No care plan', price: 0 },
+  { id: 'hosting-care', label: 'Hosting + Care', price: 29 },
+  { id: 'care-edits', label: 'Care + Edits + SEO report', price: 59 },
+  { id: 'portal-support', label: 'Portal Support', price: 119 }
+];
+
+function formatPounds(amount) {
+  return `£${amount.toLocaleString("en-GB")}`;
+}
+
+function buildEnquiryMailto({ formState, estimateSummary, selectedAddons }) {
+  const addonLines = selectedAddons
+    .map((id) => ADDON_FEATURES.find((addon) => addon.id === id))
+    .filter(Boolean)
+    .map((addon) =>
+      addon.included
+        ? `- ${addon.label} (included)`
+        : `- ${addon.label} (+${formatPounds(addon.price)})`
+    );
+  const careLine =
+    estimateSummary.carePlan.price > 0
+      ? `${estimateSummary.carePlan.label} (${formatPounds(estimateSummary.carePlan.price)}/mo)`
+      : "None";
+  const subject = `Synthetix Studio enquiry — ${estimateSummary.typeObj.name}`;
+  const body = [
+    `Name: ${formState.name}`,
+    `Business: ${formState.business || "—"}`,
+    `Email: ${formState.email}`,
+    `Phone: ${formState.phone || "—"}`,
+    "",
+    `Package: ${estimateSummary.typeObj.name} (${estimateSummary.typeObj.desc})`,
+    `Build total: ${formatPounds(estimateSummary.buildTotal)}`,
+    `Monthly care: ${careLine}`,
+    VAT_NOTICE,
+    "",
+    "Add-ons:",
+    ...(addonLines.length ? addonLines : ["- None"]),
+    "",
+    "Message:",
+    formState.message,
+  ].join("\n");
+
+  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
 
 export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedProjectModal, setSelectedProjectModal] = useState(null);
-  const [showCursorGuide, setShowCursorGuide] = useState(false);
-  const [copiedCmd, setCopiedCmd] = useState('');
-  const [customLogoUrl, setCustomLogoUrl] = useState(null);
 
   // Interactive Estimator State
   const [selectedType, setSelectedType] = useState('website');
-  const [selectedAddons, setSelectedAddons] = useState(['calculator', 'hosting']);
+  const [selectedAddons, setSelectedAddons] = useState(['setup']);
+  const [selectedCare, setSelectedCare] = useState('none');
 
   // Interactive Live Demo Preview Tab in Hero
   const [heroPreviewTab, setHeroPreviewTab] = useState('website');
@@ -306,17 +328,10 @@ export default function App() {
     message: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
-
-  const handleLogoUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setCustomLogoUrl(url);
-    }
-  };
+  const [mailDraftHref, setMailDraftHref] = useState('');
 
   const toggleAddon = (id) => {
-    if (id === 'hosting') return; // Always included free
+    if (id === 'setup') return; // Domain, SSL, and setup stay included
     setSelectedAddons((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
@@ -328,29 +343,25 @@ export default function App() {
       const found = ADDON_FEATURES.find((a) => a.id === id);
       return sum + (found ? found.price : 0);
     }, 0);
-    const total = typeObj.basePrice + addonsTotal;
+    const carePlan = CARE_PLANS.find((plan) => plan.id === selectedCare) || CARE_PLANS[0];
     return {
       typeObj,
-      totalMin: total,
-      totalMax: Math.round(total * 1.25),
-      weeks: typeObj.weeks
+      buildTotal: typeObj.basePrice + addonsTotal,
+      carePlan
     };
-  }, [selectedType, selectedAddons]);
+  }, [selectedType, selectedAddons, selectedCare]);
 
   const filteredPortfolio = useMemo(() => {
     if (activeCategory === 'All') return PORTFOLIO_PROJECTS;
     return PORTFOLIO_PROJECTS.filter((item) => item.category === activeCategory);
   }, [activeCategory]);
 
-  const copyToClipboard = (text, key) => {
-    navigator.clipboard.writeText(text);
-    setCopiedCmd(key);
-    setTimeout(() => setCopiedCmd(''), 2500);
-  };
-
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    const href = buildEnquiryMailto({ formState, estimateSummary, selectedAddons });
+    setMailDraftHref(href);
     setFormSubmitted(true);
+    window.location.href = href;
   };
 
   const scrollToSection = (id) => {
@@ -380,7 +391,7 @@ export default function App() {
               <div className="relative">
                 <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-50 blur group-hover:opacity-90 transition duration-300" />
                 <div className="relative bg-[#0B0F17] p-1.5 rounded-xl border border-white/10">
-                  <SynthetixLogo className="w-11 h-11" customLogoUrl={customLogoUrl} />
+                  <SynthetixLogo className="w-11 h-11" />
                 </div>
               </div>
               <div>
@@ -393,20 +404,6 @@ export default function App() {
               </div>
             </button>
 
-            {/* Optional Upload Trigger so User can test their exact local JPG/PNG */}
-            <label
-              title="Swap with your local Logo.jpg file"
-              className="hidden xl:flex items-center gap-1.5 ml-2 px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-slate-400 hover:text-white cursor-pointer transition"
-            >
-              <Upload className="w-3 h-3 text-purple-400" />
-              <span>Use Logo File</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoUpload}
-                className="hidden"
-              />
-            </label>
           </div>
 
           {/* Desktop Nav Links */}
@@ -427,13 +424,12 @@ export default function App() {
 
           {/* Right Actions */}
           <div className="hidden md:flex items-center gap-3">
-            <button
-              onClick={() => setShowCursorGuide(true)}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-purple-500/30 text-xs font-semibold text-purple-200 transition"
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="hidden xl:inline text-xs font-medium text-slate-300 hover:text-white transition"
             >
-              <Terminal className="w-3.5 h-3.5 text-purple-400" />
-              <span>Deploy to Vercel</span>
-            </button>
+              {CONTACT_EMAIL}
+            </a>
             <button
               onClick={() => scrollToSection('contact')}
               className="px-5 py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 hover:from-indigo-500 hover:to-fuchsia-500 shadow-lg shadow-purple-600/25 transition flex items-center gap-2"
@@ -445,13 +441,6 @@ export default function App() {
 
           {/* Mobile Hamburger */}
           <div className="flex items-center gap-2 md:hidden">
-            <button
-              onClick={() => setShowCursorGuide(true)}
-              className="p-2 rounded-lg bg-white/5 border border-white/10 text-purple-300"
-              title="Cursor / Vercel Setup"
-            >
-              <Terminal className="w-5 h-5" />
-            </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-lg bg-white/5 border border-white/10 text-slate-200"
@@ -489,11 +478,12 @@ export default function App() {
               Our Tech Stack
             </button>
             <div className="pt-2 flex flex-col gap-2">
-              <label className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300 cursor-pointer">
-                <Upload className="w-4 h-4 text-purple-400" />
-                <span>Upload Your Exact Logo.jpg</span>
-                <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-              </label>
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="block w-full py-2 text-sm font-medium text-purple-200"
+              >
+                {CONTACT_EMAIL}
+              </a>
               <button
                 onClick={() => scrollToSection('contact')}
                 className="w-full py-3 rounded-xl font-semibold text-center text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600"
@@ -545,11 +535,15 @@ export default function App() {
             </div>
 
             {/* Trust / Proof Bar */}
-            <div className="pt-4 grid grid-cols-3 gap-4 border-t border-white/10 max-w-xl">
-              <div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-white">99/100</div>
-                <div className="text-xs text-slate-400 mt-0.5">Google Speed Score</div>
-              </div>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="inline-flex items-center gap-2 text-sm font-medium text-purple-200 hover:text-white transition"
+            >
+              <Mail className="w-4 h-4 text-purple-400" />
+              <span>{CONTACT_EMAIL}</span>
+            </a>
+
+            <div className="pt-4 grid grid-cols-2 gap-4 border-t border-white/10 max-w-xl">
               <div>
                 <div className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
                   100% Bespoke
@@ -629,7 +623,6 @@ export default function App() {
                         <span className="px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
                           Lead-Gen Website Build
                         </span>
-                        <span className="text-xs text-slate-400 font-mono">0.4s Load Time</span>
                       </div>
                       <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/60 via-purple-950/40 to-slate-900 border border-purple-500/20 space-y-3">
                         <div className="h-3 w-28 rounded bg-purple-400/40" />
@@ -639,15 +632,9 @@ export default function App() {
                         <p className="text-xs text-slate-300 leading-relaxed">
                           Custom design with your branding, instant mobile quote forms, and automated WhatsApp / email lead alerts.
                         </p>
-                        <div className="grid grid-cols-2 gap-2 pt-1">
-                          <div className="p-2.5 rounded-xl bg-black/40 border border-white/10">
-                            <div className="text-[11px] text-slate-400">Monthly Enquiries</div>
-                            <div className="text-base font-bold text-emerald-400">+240% Growth</div>
-                          </div>
-                          <div className="p-2.5 rounded-xl bg-black/40 border border-white/10">
-                            <div className="text-[11px] text-slate-400">SEO Architecture</div>
-                            <div className="text-base font-bold text-cyan-400">Schema Ready</div>
-                          </div>
+                        <div className="p-2.5 rounded-xl bg-black/40 border border-white/10">
+                          <div className="text-[11px] text-slate-400">SEO Architecture</div>
+                          <div className="text-base font-bold text-cyan-400">Schema Ready</div>
                         </div>
                       </div>
                     </div>
@@ -878,7 +865,7 @@ export default function App() {
                   </p>
 
                   {/* Key Metrics Pills */}
-                  <div className="grid grid-cols-3 gap-2.5 mb-6">
+                  <div className={`grid gap-2.5 mb-6 ${project.metrics.length > 2 ? "grid-cols-3" : "grid-cols-2"}`}>
                     {project.metrics.map((m, i) => (
                       <div
                         key={i}
@@ -938,8 +925,9 @@ export default function App() {
               Interactive Project Estimator
             </h2>
             <p className="text-slate-400">
-              Configure the type of website or custom web app you need for an instant guide price and estimated build timeline.
+              Choose a package and any add-ons. The total is the exact starting price for what you select.
             </p>
+            <p className="text-sm font-medium text-slate-300">{VAT_NOTICE}</p>
           </div>
 
           <div className="grid lg:grid-cols-12 gap-8 items-start">
@@ -953,7 +941,7 @@ export default function App() {
                   </span>
                   <span>Select What You Want Us to Build</span>
                 </h3>
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-3 gap-4">
                   {PROJECT_TYPES.map((type) => {
                     const Icon = type.icon;
                     const active = selectedType === type.id;
@@ -968,10 +956,10 @@ export default function App() {
                             : 'bg-[#0B0F19] border-white/10 hover:border-white/25'
                         }`}
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <Icon className={`w-5 h-5 ${active ? 'text-purple-400' : 'text-slate-400'}`} />
+                        <div className="flex items-center justify-between mb-2 gap-2">
+                          <Icon className={`w-5 h-5 shrink-0 ${active ? 'text-purple-400' : 'text-slate-400'}`} />
                           <span className="text-xs font-bold text-purple-300">
-                            From £{type.basePrice}
+                            From {formatPounds(type.basePrice)}
                           </span>
                         </div>
                         <div className="font-bold text-white text-sm">{type.name}</div>
@@ -979,6 +967,17 @@ export default function App() {
                       </button>
                     );
                   })}
+                </div>
+                <div className="mt-5 pt-5 border-t border-white/10">
+                  <a
+                    href="#contact"
+                    className="text-base font-semibold text-purple-300 hover:text-white underline underline-offset-4"
+                  >
+                    Need something custom? Let&apos;s talk
+                  </a>
+                  <p className="text-sm text-slate-400 mt-2">
+                    Custom jobs are quoted case by case after a paid scoping session.
+                  </p>
                 </div>
               </div>
 
@@ -1017,7 +1016,39 @@ export default function App() {
                           <span className="text-xs sm:text-sm font-medium">{addon.label}</span>
                         </div>
                         <span className="text-xs font-semibold text-purple-300 shrink-0">
-                          {addon.included ? 'INCLUDED' : `+£${addon.price}`}
+                          {addon.included ? 'INCLUDED' : `+${formatPounds(addon.price)}`}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Step 3: Monthly care plans */}
+              <div className="rounded-3xl bg-[#111726] border border-white/10 p-6 sm:p-8">
+                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-purple-600 text-xs flex items-center justify-center font-bold">
+                    3
+                  </span>
+                  <span>Choose a Monthly Care Plan</span>
+                </h3>
+                <div className="grid sm:grid-cols-2 gap-3.5">
+                  {CARE_PLANS.map((plan) => {
+                    const active = selectedCare === plan.id;
+                    return (
+                      <button
+                        key={plan.id}
+                        type="button"
+                        onClick={() => setSelectedCare(plan.id)}
+                        className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition ${
+                          active
+                            ? 'bg-purple-500/15 border-purple-500/50 text-white'
+                            : 'bg-[#0B0F19] border-white/10 text-slate-300 hover:border-white/20'
+                        }`}
+                      >
+                        <span className="text-xs sm:text-sm font-medium pr-3">{plan.label}</span>
+                        <span className="text-xs font-semibold text-purple-300 shrink-0">
+                          {plan.price > 0 ? `${formatPounds(plan.price)}/mo` : "—"}
                         </span>
                       </button>
                     );
@@ -1028,30 +1059,35 @@ export default function App() {
 
             {/* Right Live Quote Summary Card */}
             <div className="lg:col-span-4 rounded-3xl bg-gradient-to-b from-indigo-950/90 via-[#111726] to-[#111726] border border-purple-500/40 p-6 sm:p-8 sticky top-28 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
-                <div>
+              <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-4 mb-5">
+                <div className="min-w-0">
                   <span className="text-xs uppercase tracking-wider text-purple-300 font-semibold">
-                    Estimated Investment
+                    Build total
                   </span>
                   <div className="text-3xl font-extrabold text-white mt-1">
-                    £{estimateSummary.totalMin.toLocaleString()} – £{estimateSummary.totalMax.toLocaleString()}
+                    {formatPounds(estimateSummary.buildTotal)}
                   </div>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">{VAT_NOTICE}</p>
                 </div>
-                <SynthetixLogo className="w-12 h-12" customLogoUrl={customLogoUrl} />
+                <SynthetixLogo className="w-12 h-12 shrink-0" />
               </div>
 
               <div className="space-y-3 text-sm mb-6">
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between gap-3 text-slate-300">
                   <span>Selected Build:</span>
-                  <span className="font-semibold text-white">{estimateSummary.typeObj.name}</span>
+                  <span className="font-semibold text-white text-right">{estimateSummary.typeObj.name}</span>
                 </div>
-                <div className="flex justify-between text-slate-300">
-                  <span>Estimated Turnaround:</span>
-                  <span className="font-semibold text-cyan-400">{estimateSummary.weeks}</span>
+                <div className="flex justify-between gap-3 text-slate-300">
+                  <span>Monthly care:</span>
+                  <span className="font-semibold text-cyan-400 text-right">
+                    {estimateSummary.carePlan.price > 0
+                      ? `${estimateSummary.carePlan.label} ${formatPounds(estimateSummary.carePlan.price)}/mo`
+                      : "None"}
+                  </span>
                 </div>
                 <div className="pt-3 border-t border-white/10">
                   <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-2">
-                    Included in Your Build:
+                    Selected add-ons:
                   </span>
                   <ul className="space-y-1.5">
                     {selectedAddons.map((id) => {
@@ -1094,15 +1130,15 @@ export default function App() {
               Why Businesses Switch From Slow WordPress Sites to Synthetix Studio
             </h2>
             <p className="text-slate-300 leading-relaxed">
-              Most agencies sell bloated templates stuffed with 30+ plugins that break, load slowly on mobile, and can’t handle custom workflows. We build with the exact same modern stack used by Netflix, Uber, and Stripe.
+              Most agencies sell bloated templates stuffed with 30+ plugins that break, load slowly on mobile, and can’t handle custom workflows.
             </p>
 
             <div className="space-y-4 pt-2">
               {[
                 {
                   icon: Gauge,
-                  title: 'Instant Mobile Load Speeds (Vercel Edge)',
-                  desc: 'Customers on 4G/5G won’t wait 5 seconds for a page to load. Our Next.js builds load in milliseconds.'
+                  title: 'Next.js sites hosted on Vercel',
+                  desc: 'Company sites are built with Next.js and hosted on Vercel, without a pile of WordPress plugins.'
                 },
                 {
                   icon: ShieldCheck,
@@ -1177,14 +1213,14 @@ export default function App() {
       </section>
 
       {/* CONTACT / START A PROJECT SECTION */}
-      <section id="contact" className="relative z-10 py-20 bg-[#0B0F19] border-t border-white/10">
+      <section id="contact" className="relative z-10 py-20 scroll-mt-24 bg-[#0B0F19] border-t border-white/10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-gradient-to-b from-[#131B2E] to-[#0D1322] border border-purple-500/30 p-6 sm:p-12 shadow-2xl">
             <div className="grid lg:grid-cols-12 gap-10">
               {/* Left Contact Info */}
               <div className="lg:col-span-5 space-y-6">
                 <div className="flex items-center gap-3">
-                  <SynthetixLogo className="w-12 h-12" customLogoUrl={customLogoUrl} />
+                  <SynthetixLogo className="w-12 h-12" />
                   <div>
                     <div className="text-lg font-extrabold tracking-widest text-white">SYNTHETIX</div>
                     <div className="text-xs tracking-[0.3em] text-purple-300">STUDIO</div>
@@ -1195,10 +1231,17 @@ export default function App() {
                   Let’s Build Your Website or Custom Web App
                 </h2>
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  Tell us a little about your business and what you want to achieve. Your selected project specification from the estimator is automatically attached.
+                  Tell us a little about your business and what you want to achieve. Submitting opens an email draft that includes the package, add-ons, and care plan you selected.
                 </p>
 
                 <div className="space-y-3 pt-2 text-sm text-slate-300">
+                  <a
+                    href={`mailto:${CONTACT_EMAIL}`}
+                    className="flex items-center gap-3 text-white hover:text-purple-200 transition"
+                  >
+                    <Mail className="w-4 h-4 text-purple-400" />
+                    <span>{CONTACT_EMAIL}</span>
+                  </a>
                   <div className="flex items-center gap-3">
                     <Globe className="w-4 h-4 text-purple-400" />
                     <span>synthetixstudio.co.uk</span>
@@ -1209,20 +1252,24 @@ export default function App() {
                   </div>
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Full Custom Domain & Hosting Setup Included</span>
+                    <span>Domain, SSL & setup included</span>
                   </div>
                 </div>
 
                 {/* Selected Spec Pill Box */}
                 <div className="p-4 rounded-2xl bg-[#080C15] border border-white/10 space-y-2">
                   <div className="text-xs font-semibold text-purple-300 uppercase tracking-wider">
-                    Attached Estimator Spec:
+                    Selected estimate:
                   </div>
                   <div className="text-sm font-bold text-white">
-                    {estimateSummary.typeObj.name} (£{estimateSummary.totalMin}–£{estimateSummary.totalMax})
+                    {estimateSummary.typeObj.name} ({formatPounds(estimateSummary.buildTotal)})
                   </div>
                   <div className="text-xs text-slate-400">
-                    Add-ons: {selectedAddons.length} selected • Est. {estimateSummary.weeks}
+                    {estimateSummary.carePlan.price > 0
+                      ? `${estimateSummary.carePlan.label} · ${formatPounds(estimateSummary.carePlan.price)}/mo`
+                      : "No monthly care plan"}
+                    {" · "}
+                    {selectedAddons.length} add-on{selectedAddons.length === 1 ? "" : "s"} · {VAT_NOTICE}
                   </div>
                 </div>
               </div>
@@ -1230,20 +1277,27 @@ export default function App() {
               {/* Right Inquiry Form */}
               <div className="lg:col-span-7">
                 {formSubmitted ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center p-8 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                      <CheckCircle2 className="w-9 h-9 text-emerald-400" />
+                  <div className="h-full flex flex-col items-center justify-center text-center p-8 rounded-2xl bg-purple-500/10 border border-purple-500/30 space-y-4">
+                    <div className="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center">
+                      <Mail className="w-9 h-9 text-purple-300" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white">Enquiry Received!</h3>
+                    <h3 className="text-2xl font-bold text-white">Email draft ready</h3>
                     <p className="text-sm text-slate-300 max-w-md">
-                      Thank you, <strong className="text-white">{formState.name || 'there'}</strong>. We have logged your specification for a{' '}
-                      <span className="text-purple-300 font-semibold">{estimateSummary.typeObj.name}</span> and will be in touch shortly to discuss your build.
+                      Your email app should have opened with this enquiry addressed to{" "}
+                      <strong className="text-white">{CONTACT_EMAIL}</strong>. Send that email to deliver it. Nothing reaches Synthetix Studio until you send the draft.
                     </p>
+                    <a
+                      href={mailDraftHref || `mailto:${CONTACT_EMAIL}`}
+                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-xs font-bold text-white"
+                    >
+                      Open the email draft again
+                    </a>
                     <button
+                      type="button"
                       onClick={() => setFormSubmitted(false)}
                       className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-white transition"
                     >
-                      Send Another Enquiry
+                      Edit enquiry
                     </button>
                   </div>
                 ) : (
@@ -1323,8 +1377,11 @@ export default function App() {
                       className="w-full py-4 rounded-xl font-bold text-base text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 hover:from-indigo-500 hover:to-fuchsia-500 shadow-xl shadow-purple-600/25 transition flex items-center justify-center gap-2"
                     >
                       <Send className="w-4 h-4" />
-                      <span>Send Project Enquiry</span>
+                      <span>Open email draft</span>
                     </button>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      This opens your email app with the enquiry addressed to {CONTACT_EMAIL}, including the price options you selected. The message is delivered only when you send that email.
+                    </p>
                   </form>
                 )}
               </div>
@@ -1337,18 +1394,18 @@ export default function App() {
       <footer className="relative z-10 py-10 bg-[#05070C] border-t border-white/10 text-xs text-slate-400">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <SynthetixLogo className="w-8 h-8" customLogoUrl={customLogoUrl} />
+            <SynthetixLogo className="w-8 h-8" />
             <span className="font-bold tracking-widest text-white">SYNTHETIX STUDIO</span>
             <span>• Bespoke Websites & Web Applications</span>
           </div>
           <div className="flex items-center gap-6">
             <span>synthetixstudio.co.uk</span>
-            <button
-              onClick={() => setShowCursorGuide(true)}
-              className="text-purple-400 hover:text-purple-300 font-semibold"
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="text-purple-300 hover:text-purple-200 font-semibold"
             >
-              Cursor + Vercel Setup Guide
-            </button>
+              {CONTACT_EMAIL}
+            </a>
           </div>
         </div>
       </footer>
@@ -1408,104 +1465,6 @@ export default function App() {
         </div>
       )}
 
-      {/* CURSOR -> GITHUB -> VERCEL WORKFLOW MODAL */}
-      {showCursorGuide && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0E1422] border border-purple-500/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl my-8">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <div className="flex items-center gap-2.5">
-                <Terminal className="w-5 h-5 text-purple-400" />
-                <h3 className="text-xl font-bold text-white">
-                  Deploy to `synthetixstudio.co.uk` (Cursor + Vercel Workflow)
-                </h3>
-              </div>
-              <button
-                onClick={() => setShowCursorGuide(false)}
-                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4 text-xs sm:text-sm text-slate-300">
-              <p>
-                Follow the exact same workflow we used for your Invoice, RAMS, and Engineer apps to get your main <strong className="text-white">Synthetix Studio</strong> agency website live on Vercel:
-              </p>
-
-              {/* Step 1 */}
-              <div className="p-4 rounded-2xl bg-[#070A11] border border-white/10 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-purple-300">
-                    1. Create Your Local Next.js Folder & Open in Cursor
-                  </span>
-                  <button
-                    onClick={() =>
-                      copyToClipboard(
-                        'npx create-next-app@latest synthetix-studio-web --tailwind --eslint --app --src-dir --use-npm && npm install lucide-react',
-                        'cmd1'
-                      )
-                    }
-                    className="flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-white/10 hover:bg-white/15 text-white"
-                  >
-                    {copiedCmd === 'cmd1' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedCmd === 'cmd1' ? 'Copied' : 'Copy'}</span>
-                  </button>
-                </div>
-                <pre className="text-[11px] font-mono text-cyan-300 overflow-x-auto">
-                  npx create-next-app@latest synthetix-studio-web --tailwind --eslint --app --src-dir --use-npm{'\n'}
-                  cd synthetix-studio-web && npm install lucide-react
-                </pre>
-              </div>
-
-              {/* Step 2 */}
-              <div className="p-4 rounded-2xl bg-[#070A11] border border-white/10 space-y-2">
-                <span className="font-bold text-purple-300 block">
-                  2. Paste This Component into `src/app/page.jsx`
-                </span>
-                <p className="text-xs text-slate-400">
-                  Add <code className="text-pink-400">&quot;use client&quot;;</code> at the very top of <code className="text-white">src/app/page.jsx</code>, paste this file’s code, and optionally place your <code className="text-white">Logo.jpg</code> inside the <code className="text-white">public/</code> folder.
-                </p>
-              </div>
-
-              {/* Step 3 */}
-              <div className="p-4 rounded-2xl bg-[#070A11] border border-white/10 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-purple-300">
-                    3. Push to GitHub & Connect Your Root Domain on Vercel
-                  </span>
-                  <button
-                    onClick={() =>
-                      copyToClipboard(
-                        'git add . && git commit -m "Launch Synthetix Studio website" && git push -u origin main',
-                        'cmd2'
-                      )
-                    }
-                    className="flex items-center gap-1 text-xs px-2.5 py-1 rounded bg-white/10 hover:bg-white/15 text-white"
-                  >
-                    {copiedCmd === 'cmd2' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copiedCmd === 'cmd2' ? 'Copied' : 'Copy'}</span>
-                  </button>
-                </div>
-                <pre className="text-[11px] font-mono text-emerald-300 overflow-x-auto">
-                  git add . && git commit -m &quot;Launch Synthetix Studio website&quot; && git push
-                </pre>
-                <p className="text-xs text-slate-400 pt-1">
-                  In Vercel → Project Settings → Domains, add <strong className="text-white">synthetixstudio.co.uk</strong> and <strong className="text-white">www.synthetixstudio.co.uk</strong> alongside your existing subdomains!
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowCursorGuide(false)}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-xs font-bold text-white"
-              >
-                Got It, Back to Preview
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
