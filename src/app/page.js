@@ -222,9 +222,6 @@ const PORTFOLIO_PROJECTS = [
   }
 ];
 
-// Change this one string to update the VAT notice everywhere it is shown.
-const VAT_NOTICE = "No VAT to add — we're not VAT registered.";
-
 const CONTACT_EMAIL = "synthetix.studio1@gmail.com";
 
 const PROJECT_TYPES = [
@@ -294,7 +291,6 @@ function buildEnquiryMailto({ formState, estimateSummary, selectedAddons }) {
     `Package: ${estimateSummary.typeObj.name} (${estimateSummary.typeObj.desc})`,
     `Build total: ${formatPounds(estimateSummary.buildTotal)}`,
     `Monthly care: ${careLine}`,
-    VAT_NOTICE,
     "",
     "Add-ons:",
     ...(addonLines.length ? addonLines : ["- None"]),
@@ -927,7 +923,6 @@ export default function App() {
             <p className="text-slate-400">
               Choose a package and any add-ons. The total is the exact starting price for what you select.
             </p>
-            <p className="text-sm font-medium text-slate-300">{VAT_NOTICE}</p>
           </div>
 
           <div className="grid lg:grid-cols-12 gap-8 items-start">
@@ -1067,7 +1062,6 @@ export default function App() {
                   <div className="text-3xl font-extrabold text-white mt-1">
                     {formatPounds(estimateSummary.buildTotal)}
                   </div>
-                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">{VAT_NOTICE}</p>
                 </div>
                 <SynthetixLogo className="w-12 h-12 shrink-0" />
               </div>
@@ -1269,7 +1263,7 @@ export default function App() {
                       ? `${estimateSummary.carePlan.label} · ${formatPounds(estimateSummary.carePlan.price)}/mo`
                       : "No monthly care plan"}
                     {" · "}
-                    {selectedAddons.length} add-on{selectedAddons.length === 1 ? "" : "s"} · {VAT_NOTICE}
+                    {selectedAddons.length} add-on{selectedAddons.length === 1 ? "" : "s"}
                   </div>
                 </div>
               </div>
