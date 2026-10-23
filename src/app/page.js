@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useId, useMemo, useState } from "react";
 import {
   Sparkles,
@@ -9,7 +10,7 @@ import {
   ShieldCheck,
   FileSignature,
   CreditCard,
-  Bot,
+  Workflow,
   Globe,
   Check,
   Menu,
@@ -165,7 +166,7 @@ const PORTFOLIO_PROJECTS = [
   },
   {
     id: 'smart-invoice',
-    title: 'AI-Assisted Smart Invoice Generator',
+    title: 'Smart Invoice Generator',
     subdomain: 'invoice.synthetixstudio.co.uk',
     category: 'Custom Web Apps',
     badge: 'Live Subdomain App',
@@ -173,10 +174,10 @@ const PORTFOLIO_PROJECTS = [
     description:
       'Turns rough, shorthand job notes into polished, itemised customer invoices in seconds. Built with Firebase Authentication, persistent cloud storage, and one-click print/PDF export.',
     metrics: ['Cloud Saved Clients', 'Instant PDF Print'],
-    tech: ['Next.js', 'Firebase Auth', 'Firestore DB', 'Smart Note Parser'],
+    tech: ['Next.js', 'Firebase Auth', 'Firestore DB', 'Invoice Line Builder'],
     accent: 'from-cyan-500 via-blue-500 to-indigo-600',
     previewFeatures: [
-      'Intelligent shorthand note expansion into professional client-ready line items',
+      'Shorthand notes expanded into professional client-ready line items',
       'Automatic VAT / tax, subtotal, and payment terms calculation',
       'Secure Google & Email login via Firebase so businesses can access invoices anywhere',
       'Clean A4 print & PDF stylesheet engineered for zero-clutter client presentation'
@@ -205,7 +206,7 @@ const PORTFOLIO_PROJECTS = [
     id: 'bespoke-websites',
     title: 'High-Converting Business & Trade Websites',
     subdomain: 'synthetixstudio.co.uk',
-    category: 'Websites & AI Lead-Gen',
+    category: 'Websites & Lead-Gen',
     badge: 'Bespoke Web Design',
     clientType: 'Local Businesses, Agencies & Startups',
     description:
@@ -216,7 +217,6 @@ const PORTFOLIO_PROJECTS = [
     previewFeatures: [
       'Custom interactive quote estimators that qualify leads before you even pick up the phone',
       'Deployed on Vercel',
-      'Optional AI receptionist & PBX-to-CRM call transcription integration',
       'Full custom domain configuration, SSL security, and ongoing studio support'
     ]
   }
@@ -252,7 +252,6 @@ const ADDON_FEATURES = [
   { id: 'auth', label: 'Logins + cloud database', price: 395 },
   { id: 'pdf', label: 'Digital signatures + branded PDFs', price: 295 },
   { id: 'stripe', label: 'Stripe payments', price: 350 },
-  { id: 'ai', label: 'AI text parsing / automation', price: 450 },
   { id: 'calculator', label: 'Quote calculator', price: 200 },
   { id: 'setup', label: 'Domain, SSL & setup', price: 0, included: true }
 ];
@@ -399,7 +398,6 @@ export default function App() {
                 </span>
               </div>
             </button>
-
           </div>
 
           {/* Desktop Nav Links */}
@@ -415,6 +413,9 @@ export default function App() {
             </button>
             <button onClick={() => scrollToSection('stack')} className="hover:text-white transition">
               Why Synthetix
+            </button>
+            <button onClick={() => scrollToSection('about')} className="hover:text-white transition">
+              About
             </button>
           </nav>
 
@@ -473,6 +474,12 @@ export default function App() {
             >
               Our Tech Stack
             </button>
+            <button
+              onClick={() => scrollToSection('about')}
+              className="block w-full text-left py-2 text-slate-200 font-medium"
+            >
+              About Stephen
+            </button>
             <div className="pt-2 flex flex-col gap-2">
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
@@ -498,7 +505,7 @@ export default function App() {
           <div className="lg:col-span-7 space-y-7">
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs sm:text-sm font-medium">
               <Sparkles className="w-4 h-4 text-fuchsia-400" />
-              <span>Bespoke Web Design & Custom Web Applications • UK Studio</span>
+              <span>Birmingham Web Design & Custom Web Apps</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
@@ -509,7 +516,7 @@ export default function App() {
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-300 max-w-2xl leading-relaxed font-normal">
-              At <strong className="text-white font-semibold">Synthetix Studio</strong>, we don’t just build static brochure sites. We engineer ultra-fast company websites, custom trade job portals, smart invoice tools, and full SaaS platforms tailored around how you work.
+              <strong className="text-white font-semibold">Synthetix Studio</strong> is Stephen’s Birmingham web design studio. We build company websites, trade job portals, invoice tools, and custom web apps for businesses in Birmingham, the West Midlands, and beyond.
             </p>
 
             {/* Primary CTAs */}
@@ -681,7 +688,7 @@ export default function App() {
                           Rough Note: <span className="text-white">{'"fitted 6 downlights + fault find 3hrs"'}</span>
                         </div>
                         <div className="p-3 rounded-xl bg-indigo-950/50 border border-indigo-500/30 text-xs space-y-1">
-                          <div className="font-semibold text-indigo-200">AI Expanded Line Item:</div>
+                          <div className="font-semibold text-indigo-200">Invoice line item:</div>
                           <div className="text-slate-200">
                             Supply & installation of 6x fire-rated LED downlights, circuit fault diagnostics & testing (3 hrs).
                           </div>
@@ -725,7 +732,7 @@ export default function App() {
               Everything You Need to Look Professional & Save Hours Every Week
             </h2>
             <p className="text-slate-400 text-base sm:text-lg">
-              Whether you need a sleek new website to win more local work or a custom web application that eliminates evening admin, we build it end-to-end.
+              Birmingham trades and West Midlands businesses use these sites and tools to look professional and cut the evening admin. We build each one end to end.
             </p>
           </div>
 
@@ -753,10 +760,10 @@ export default function App() {
                 color: 'from-cyan-500 to-blue-500'
               },
               {
-                icon: Bot,
-                title: 'AI & Workflow Automation',
-                desc: 'Smart tools that turn shorthand notes into invoices, sync phone calls into your CRM, and qualify leads 24/7.',
-                bullets: ['AI Note-to-Invoice Parsing', 'Automated Email Workflows', 'Custom Business Calculators'],
+                icon: Workflow,
+                title: 'Workflow Automation',
+                desc: 'Tools that turn shorthand notes into invoices, send follow-up emails, and qualify leads with a quote form.',
+                bullets: ['Shorthand notes into invoices', 'Automated Email Workflows', 'Custom Business Calculators'],
                 color: 'from-fuchsia-500 to-rose-500'
               }
             ].map((service, idx) => {
@@ -810,7 +817,7 @@ export default function App() {
 
           {/* Filter Pills */}
           <div className="flex flex-wrap gap-2">
-            {['All', 'Trade & Contractor Portals', 'Custom Web Apps', 'Websites & AI Lead-Gen'].map(
+            {['All', 'Trade & Contractor Portals', 'Custom Web Apps', 'Websites & Lead-Gen'].map(
               (cat) => (
                 <button
                   key={cat}
@@ -1124,7 +1131,7 @@ export default function App() {
               Why Businesses Switch From Slow WordPress Sites to Synthetix Studio
             </h2>
             <p className="text-slate-300 leading-relaxed">
-              Most agencies sell bloated templates stuffed with 30+ plugins that break, load slowly on mobile, and can’t handle custom workflows.
+              Most agencies sell bloated templates stuffed with 30+ plugins that break, load slowly on mobile, and can’t handle custom workflows. We build with Next.js, React, and Tailwind, so the site stays straightforward to extend.
             </p>
 
             <div className="space-y-4 pt-2">
@@ -1142,7 +1149,7 @@ export default function App() {
                 {
                   icon: Layers,
                   title: 'Built to Grow Into a Full Web Portal',
-                  desc: 'Start with a website today, and add an engineer portal, customer login area, or AI estimator whenever you are ready.'
+                  desc: 'Start with a website today, and add an engineer portal, customer login area, or quote estimator whenever you are ready.'
                 }
               ].map((item, idx) => {
                 const Icon = item.icon;
@@ -1206,6 +1213,35 @@ export default function App() {
         </div>
       </section>
 
+      {/* ABOUT */}
+      <section id="about" className="relative z-10 py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-5 space-y-4">
+            <span className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">
+              About the studio
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+              Stephen, Birmingham-based
+            </h2>
+          </div>
+          <div className="lg:col-span-7 space-y-4 text-slate-300 leading-relaxed">
+            <p>
+              Synthetix Studio is Stephen, a Birmingham web designer. You speak directly with the person who designs and builds the site, from the first conversation through to launch.
+            </p>
+            <p>
+              The studio works with trades and small businesses across Birmingham and the West Midlands, and with clients elsewhere in the UK who want a custom website or web app instead of a template.
+            </p>
+            <button
+              onClick={() => scrollToSection('contact')}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-purple-300 hover:text-white transition"
+            >
+              Start a project with Stephen
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* CONTACT / START A PROJECT SECTION */}
       <section id="contact" className="relative z-10 py-20 scroll-mt-24 bg-[#0B0F19] border-t border-white/10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1242,7 +1278,7 @@ export default function App() {
                   </div>
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Direct UK Developer Communication</span>
+                    <span>Stephen, based in Birmingham</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -1374,7 +1410,11 @@ export default function App() {
                       <span>Open email draft</span>
                     </button>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      This opens your email app with the enquiry addressed to {CONTACT_EMAIL}, including the price options you selected. The message is delivered only when you send that email.
+                      This opens your email app with the enquiry addressed to {CONTACT_EMAIL}, including the price options you selected. The message is delivered only when you send that email. By sending it you agree to the{" "}
+                      <Link href="/privacy" className="text-purple-300 hover:text-white underline underline-offset-2">
+                        privacy policy
+                      </Link>
+                      .
                     </p>
                   </form>
                 )}
@@ -1390,16 +1430,25 @@ export default function App() {
           <div className="flex items-center gap-3">
             <SynthetixLogo className="w-8 h-8" />
             <span className="font-bold tracking-widest text-white">SYNTHETIX STUDIO</span>
-            <span>• Bespoke Websites & Web Applications</span>
+            <span>• Birmingham web design</span>
           </div>
-          <div className="flex items-center gap-6">
-            <span>synthetixstudio.co.uk</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <button onClick={() => scrollToSection('about')} className="hover:text-white transition">
+              About
+            </button>
+            <Link href="/privacy" className="hover:text-white transition">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-white transition">
+              Terms
+            </Link>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="text-purple-300 hover:text-purple-200 font-semibold"
             >
               {CONTACT_EMAIL}
             </a>
+            <span>synthetixstudio.co.uk</span>
           </div>
         </div>
       </footer>
