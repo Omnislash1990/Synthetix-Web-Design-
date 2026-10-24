@@ -9,7 +9,6 @@ import {
   Layers,
   ShieldCheck,
   FileSignature,
-  CreditCard,
   Workflow,
   Globe,
   Check,
@@ -168,7 +167,7 @@ const PORTFOLIO_PROJECTS = [
     id: 'smart-invoice',
     title: 'Smart Invoice Generator',
     subdomain: 'invoice.synthetixstudio.co.uk',
-    category: 'Custom Web Apps',
+    category: 'Invoice tools',
     badge: 'Live Subdomain App',
     clientType: 'Small Businesses & Sole Traders',
     description:
@@ -249,18 +248,56 @@ const PROJECT_TYPES = [
 ];
 
 const ADDON_FEATURES = [
-  { id: 'auth', label: 'Logins + cloud database', price: 395 },
-  { id: 'pdf', label: 'Digital signatures + branded PDFs', price: 295 },
-  { id: 'stripe', label: 'Stripe payments', price: 350 },
-  { id: 'calculator', label: 'Quote calculator', price: 200 },
+  {
+    id: 'auth',
+    label: 'Logins + cloud database',
+    price: 395,
+    detail:
+      'Secure Google or email sign-in and a cloud database for one core record type (e.g. jobs or customers), up to 3 user roles.'
+  },
+  {
+    id: 'pdf',
+    label: 'Digital signatures + branded PDFs',
+    price: 295,
+    detail: 'On-screen signature capture and 1 branded PDF template, emailed automatically.'
+  },
+  {
+    id: 'stripe',
+    label: 'Stripe payments',
+    price: 350,
+    detail: 'One-off card payments or deposits via Stripe Checkout (subscriptions quoted separately).'
+  },
+  {
+    id: 'calculator',
+    label: 'Quote calculator',
+    price: 200,
+    detail: 'A simple instant-price calculator with up to about 10 options.'
+  },
   { id: 'setup', label: 'Domain, SSL & setup', price: 0, included: true }
 ];
 
 const CARE_PLANS = [
   { id: 'none', label: 'No care plan', price: 0 },
-  { id: 'hosting-care', label: 'Hosting + Care', price: 29 },
-  { id: 'care-edits', label: 'Care + Edits + SEO report', price: 59 },
-  { id: 'portal-support', label: 'Portal Support', price: 119 }
+  {
+    id: 'hosting-care',
+    label: 'Hosting + Care',
+    price: 29,
+    detail: 'Hosting, SSL, backups, uptime and security monitoring.'
+  },
+  {
+    id: 'care-edits',
+    label: 'Care + Edits + SEO report',
+    price: 59,
+    detail:
+      'Everything in £29, plus up to 1 hour of small edits a month and a monthly Google performance report (searches, clicks, rankings for key local terms, speed and errors). The report covers results; it’s not ongoing SEO work.'
+  },
+  {
+    id: 'portal-support',
+    label: 'Portal Support',
+    price: 119,
+    detail:
+      'Everything in £59, plus portal upkeep (logins, database, PDFs, emails), bug fixes, Firebase and Stripe monitoring, up to 2 hours of changes a month and a next-working-day response. New features are quoted separately.'
+  }
 ];
 
 function formatPounds(amount) {
@@ -505,18 +542,18 @@ export default function App() {
           <div className="lg:col-span-7 space-y-7">
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs sm:text-sm font-medium">
               <Sparkles className="w-4 h-4 text-fuchsia-400" />
-              <span>Birmingham Web Design & Custom Web Apps</span>
+              <span>Birmingham Web Design</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
-              Websites & Custom Web Apps That{' '}
+              Websites That{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400">
                 Actually Run Your Business.
               </span>
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-300 max-w-2xl leading-relaxed font-normal">
-              <strong className="text-white font-semibold">Synthetix Studio</strong> is Stephen’s Birmingham web design studio. We build company websites, trade job portals, invoice tools, and custom web apps for businesses in Birmingham, the West Midlands, and beyond.
+              <strong className="text-white font-semibold">Synthetix Studio</strong> is Stephen’s Birmingham web design studio. We build company websites, trade job portals, and invoice tools for businesses in Birmingham, the West Midlands, and beyond.
             </p>
 
             {/* Primary CTAs */}
@@ -736,7 +773,7 @@ export default function App() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 icon: Globe,
@@ -751,13 +788,6 @@ export default function App() {
                 desc: 'Replace paper pads and spreadsheets with custom engineer call forms, RAMS builders, and digital sign-off sheets.',
                 bullets: ['Touch Signature Capture', 'Automatic Hour & Cost Maths', 'Instant Branded PDF & Emails'],
                 color: 'from-purple-500 to-fuchsia-500'
-              },
-              {
-                icon: CreditCard,
-                title: 'SaaS & Stripe Web Apps',
-                desc: 'Have an idea for an industry tool? We build multi-user web apps with secure logins, cloud databases, and subscriptions.',
-                bullets: ['Google & Email User Logins', 'Stripe Checkout & Billing', 'Subdomain & Cloud Deployment'],
-                color: 'from-cyan-500 to-blue-500'
               },
               {
                 icon: Workflow,
@@ -817,7 +847,7 @@ export default function App() {
 
           {/* Filter Pills */}
           <div className="flex flex-wrap gap-2">
-            {['All', 'Trade & Contractor Portals', 'Custom Web Apps', 'Websites & Lead-Gen'].map(
+            {['All', 'Trade & Contractor Portals', 'Websites & Lead-Gen'].map(
               (cat) => (
                 <button
                   key={cat}
@@ -999,15 +1029,15 @@ export default function App() {
                         key={addon.id}
                         type="button"
                         onClick={() => toggleAddon(addon.id)}
-                        className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition ${
+                        className={`p-3.5 rounded-xl border text-left flex items-start justify-between gap-3 transition ${
                           isSelected
                             ? 'bg-purple-500/15 border-purple-500/50 text-white'
                             : 'bg-[#0B0F19] border-white/10 text-slate-300 hover:border-white/20'
                         }`}
                       >
-                        <div className="flex items-center gap-3 pr-2">
+                        <div className="flex items-start gap-3 pr-2 min-w-0">
                           <div
-                            className={`w-5 h-5 rounded-md flex items-center justify-center border ${
+                            className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border shrink-0 ${
                               isSelected
                                 ? 'bg-purple-600 border-purple-400 text-white'
                                 : 'border-slate-600'
@@ -1015,9 +1045,16 @@ export default function App() {
                           >
                             {isSelected && <Check className="w-3.5 h-3.5" />}
                           </div>
-                          <span className="text-xs sm:text-sm font-medium">{addon.label}</span>
+                          <span className="min-w-0">
+                            <span className="block text-xs sm:text-sm font-medium">{addon.label}</span>
+                            {addon.detail ? (
+                              <span className={`block text-xs font-normal leading-relaxed mt-1 ${isSelected ? 'text-slate-300' : 'text-slate-400'}`}>
+                                {addon.detail}
+                              </span>
+                            ) : null}
+                          </span>
                         </div>
-                        <span className="text-xs font-semibold text-purple-300 shrink-0">
+                        <span className="text-xs font-semibold text-purple-300 shrink-0 whitespace-nowrap">
                           {addon.included ? 'INCLUDED' : `+${formatPounds(addon.price)}`}
                         </span>
                       </button>
@@ -1042,14 +1079,21 @@ export default function App() {
                         key={plan.id}
                         type="button"
                         onClick={() => setSelectedCare(plan.id)}
-                        className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition ${
+                        className={`p-3.5 rounded-xl border text-left flex items-start justify-between gap-3 transition ${
                           active
                             ? 'bg-purple-500/15 border-purple-500/50 text-white'
                             : 'bg-[#0B0F19] border-white/10 text-slate-300 hover:border-white/20'
                         }`}
                       >
-                        <span className="text-xs sm:text-sm font-medium pr-3">{plan.label}</span>
-                        <span className="text-xs font-semibold text-purple-300 shrink-0">
+                        <span className="min-w-0 pr-1">
+                          <span className="block text-xs sm:text-sm font-medium">{plan.label}</span>
+                          {plan.detail ? (
+                            <span className={`block text-xs font-normal leading-relaxed mt-1 ${active ? 'text-slate-300' : 'text-slate-400'}`}>
+                              {plan.detail}
+                            </span>
+                          ) : null}
+                        </span>
+                        <span className="text-xs font-semibold text-purple-300 shrink-0 whitespace-nowrap">
                           {plan.price > 0 ? `${formatPounds(plan.price)}/mo` : "—"}
                         </span>
                       </button>
@@ -1220,22 +1264,19 @@ export default function App() {
             <span className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">
               About the studio
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-              Stephen, Birmingham-based
-            </h2>
           </div>
           <div className="lg:col-span-7 space-y-4 text-slate-300 leading-relaxed">
             <p>
               Synthetix Studio is Stephen, a Birmingham web designer. You speak directly with the person who designs and builds the site, from the first conversation through to launch.
             </p>
             <p>
-              The studio works with trades and small businesses across Birmingham and the West Midlands, and with clients elsewhere in the UK who want a custom website or web app instead of a template.
+              The studio works with trades and small businesses across Birmingham and the West Midlands, and with clients elsewhere in the UK who want a custom website instead of a template.
             </p>
             <button
               onClick={() => scrollToSection('contact')}
               className="inline-flex items-center gap-2 text-sm font-semibold text-purple-300 hover:text-white transition"
             >
-              Start a project with Stephen
+              Start a project with Synthetix Studio
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -1258,7 +1299,7 @@ export default function App() {
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-                  Let’s Build Your Website or Custom Web App
+                  Let’s Build Your Website
                 </h2>
                 <p className="text-sm text-slate-300 leading-relaxed">
                   Tell us a little about your business and what you want to achieve. Submitting opens an email draft that includes the package, add-ons, and care plan you selected.
@@ -1275,10 +1316,6 @@ export default function App() {
                   <div className="flex items-center gap-3">
                     <Globe className="w-4 h-4 text-purple-400" />
                     <span>synthetixstudio.co.uk</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Stephen, based in Birmingham</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -1390,7 +1427,7 @@ export default function App() {
 
                     <div>
                       <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                        Tell Us About Your Website or App Idea *
+                        Tell Us About Your Website *
                       </label>
                       <textarea
                         rows={4}

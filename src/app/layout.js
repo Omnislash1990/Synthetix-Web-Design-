@@ -12,9 +12,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Synthetix Studio | Birmingham Web Design & Custom Web Apps",
+  title: "Synthetix Studio | Birmingham Web Design",
   description:
-    "Stephen is a Birmingham web designer building bespoke business websites, trade portals, and custom web apps for West Midlands companies.",
+    "Stephen is a Birmingham web designer building bespoke business websites and trade portals for West Midlands companies.",
 };
 
 export default function RootLayout({ children }) {
