@@ -1264,9 +1264,6 @@ export default function App() {
             <span className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">
               About the studio
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-              Stephen, Birmingham-based
-            </h2>
           </div>
           <div className="lg:col-span-7 space-y-4 text-slate-300 leading-relaxed">
             <p>
@@ -1279,7 +1276,7 @@ export default function App() {
               onClick={() => scrollToSection('contact')}
               className="inline-flex items-center gap-2 text-sm font-semibold text-purple-300 hover:text-white transition"
             >
-              Start a project with Stephen
+              Start a project with Synthetix Studio
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
