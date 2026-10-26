@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CookieSettingsButton from "@/components/CookieSettingsButton";
 
 export default function LegalDocument({ title, children }) {
   return (
@@ -20,7 +21,7 @@ export default function LegalDocument({ title, children }) {
           Synthetix Studio, Birmingham
         </p>
         <h1 className="mt-3 text-4xl font-extrabold text-white">{title}</h1>
-        <p className="mt-3 text-sm text-slate-400">Last updated 22 October 2026</p>
+        <p className="mt-3 text-sm text-slate-400">Last updated 26 October 2026</p>
         <div className="mt-10 space-y-8 text-sm sm:text-base leading-relaxed text-slate-300">
           {children}
         </div>
@@ -34,6 +35,10 @@ export default function LegalDocument({ title, children }) {
           <Link href="/terms" className="hover:text-white">
             Terms
           </Link>
+          <Link href="/cookies" className="hover:text-white">
+            Cookies
+          </Link>
+          <CookieSettingsButton />
           <Link href="/#about" className="hover:text-white">
             About
           </Link>

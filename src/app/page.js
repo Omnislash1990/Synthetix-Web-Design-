@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useId, useMemo, useState } from "react";
+import CookieSettingsButton from "@/components/CookieSettingsButton";
+import GoogleReviewLink from "@/components/GoogleReviewLink";
 import {
   Sparkles,
   CheckCircle2,
@@ -515,7 +517,7 @@ export default function App() {
               onClick={() => scrollToSection('about')}
               className="block w-full text-left py-2 text-slate-200 font-medium"
             >
-              About Stephen
+              About
             </button>
             <div className="pt-2 flex flex-col gap-2">
               <a
@@ -553,7 +555,7 @@ export default function App() {
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-300 max-w-2xl leading-relaxed font-normal">
-              <strong className="text-white font-semibold">Synthetix Studio</strong> is Stephen’s Birmingham web design studio. We build company websites, trade job portals, and invoice tools for businesses in Birmingham, the West Midlands, and beyond.
+              <strong className="text-white font-semibold">Synthetix Studio</strong> is a Birmingham web design studio. We build company websites, trade job portals, and invoice tools for businesses in Birmingham, the West Midlands, and beyond.
             </p>
 
             {/* Primary CTAs */}
@@ -1267,7 +1269,7 @@ export default function App() {
           </div>
           <div className="lg:col-span-7 space-y-4 text-slate-300 leading-relaxed">
             <p>
-              Synthetix Studio is Stephen, a Birmingham web designer. You speak directly with the person who designs and builds the site, from the first conversation through to launch.
+              Synthetix Studio is a Birmingham web design studio. You speak directly with the person who designs and builds the site, from the first conversation through to launch.
             </p>
             <p>
               The studio works with trades and small businesses across Birmingham and the West Midlands, and with clients elsewhere in the UK who want a custom website instead of a template.
@@ -1321,6 +1323,7 @@ export default function App() {
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                     <span>Domain, SSL & setup included</span>
                   </div>
+                  <GoogleReviewLink />
                 </div>
 
                 {/* Selected Spec Pill Box */}
@@ -1463,29 +1466,36 @@ export default function App() {
 
       {/* FOOTER */}
       <footer className="relative z-10 py-10 bg-[#05070C] border-t border-white/10 text-xs text-slate-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <SynthetixLogo className="w-8 h-8" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-between gap-5 lg:flex-row lg:items-start">
+          <div className="flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 lg:justify-start">
+            <SynthetixLogo className="w-8 h-8 shrink-0" />
             <span className="font-bold tracking-widest text-white">SYNTHETIX STUDIO</span>
             <span>• Birmingham web design</span>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            <button onClick={() => scrollToSection('about')} className="hover:text-white transition">
-              About
-            </button>
-            <Link href="/privacy" className="hover:text-white transition">
-              Privacy
-            </Link>
-            <Link href="/terms" className="hover:text-white transition">
-              Terms
-            </Link>
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="text-purple-300 hover:text-purple-200 font-semibold"
-            >
-              {CONTACT_EMAIL}
-            </a>
-            <span>synthetixstudio.co.uk</span>
+          <div className="flex w-full min-w-0 flex-col items-center gap-3 lg:flex-1 lg:items-end">
+            <div className="flex max-w-full flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:justify-end">
+              <button onClick={() => scrollToSection('about')} className="hover:text-white transition">
+                About
+              </button>
+              <Link href="/privacy" className="hover:text-white transition">
+                Privacy
+              </Link>
+              <Link href="/terms" className="hover:text-white transition">
+                Terms
+              </Link>
+              <Link href="/cookies" className="hover:text-white transition">
+                Cookies
+              </Link>
+              <CookieSettingsButton />
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="text-purple-300 hover:text-purple-200 font-semibold"
+              >
+                {CONTACT_EMAIL}
+              </a>
+              <span>synthetixstudio.co.uk</span>
+            </div>
+            <GoogleReviewLink compact />
           </div>
         </div>
       </footer>

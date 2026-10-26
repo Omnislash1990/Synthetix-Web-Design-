@@ -3,21 +3,20 @@ import LegalDocument from "@/components/LegalDocument";
 
 export const metadata = {
   title: "Privacy Policy | Synthetix Studio",
-  description:
-    "How Synthetix Studio, Stephen’s Birmingham web design studio, uses information you send through an enquiry.",
+  description: "How Synthetix Studio uses information you send through an enquiry.",
 };
 
 export default function PrivacyPage() {
   return (
     <LegalDocument title="Privacy policy">
       <p>
-        Synthetix Studio is Stephen, a web designer based in Birmingham, United Kingdom. This policy explains what happens to information you share on synthetixstudio.co.uk.
+        Synthetix Studio is a web design studio in Birmingham, United Kingdom. This policy explains what happens to information you share on synthetixstudio.co.uk.
       </p>
 
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-white">Who to contact</h2>
         <p>
-          Stephen is the person responsible for personal information collected through this site. Use the enquiry form on the{" "}
+          Synthetix Studio is responsible for personal information collected through this site. Use the enquiry form on the{" "}
           <Link href="/#contact" className="text-purple-300 hover:text-white underline underline-offset-2">
             homepage
           </Link>{" "}
@@ -33,7 +32,7 @@ export default function PrivacyPage() {
           <li>your business name, if you add one</li>
           <li>your email address</li>
           <li>your phone number, if you add one</li>
-          <li>a description of the website or app you want</li>
+          <li>a description of the website or tool you want</li>
           <li>the project type and options you selected in the quote estimator</li>
         </ul>
         <p>
@@ -44,14 +43,18 @@ export default function PrivacyPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-white">Hosting and cookies</h2>
         <p>
-          The site is hosted on Vercel. The host may keep short technical logs, such as IP address, browser type, and the page requested, so the site can run and stay secure. This site does not set advertising or analytics cookies.
+          The site is hosted on Vercel. The host may keep short technical logs, such as IP address, browser type, and the page requested, so the site can run and stay secure. Advertising cookies stay off. Analytics cookies are optional: Google Analytics loads only after you accept them. If you reject them, it is not loaded. The{" "}
+          <Link href="/cookies" className="text-purple-300 hover:text-white underline underline-offset-2">
+            cookies page
+          </Link>{" "}
+          explains how to change that choice.
         </p>
       </section>
 
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-white">How long we keep an enquiry</h2>
         <p>
-          Enquiry messages are kept while we are talking about a project, and for a short time afterwards in case you return. Ask Stephen to delete an enquiry and it will be removed unless a record has to be kept for tax or a legal claim.
+          Enquiry messages are kept while we are talking about a project, and for a short time afterwards in case you return. Ask the studio to delete an enquiry and it will be removed unless a record has to be kept for tax or a legal claim.
         </p>
       </section>
 
