@@ -117,3 +117,17 @@ export function applyCookieChoice(choice) {
     window.gtag("consent", "update", CONSENT_DENIED);
   }
 }
+
+/**
+ * Sends a GA4 event only when analytics is already on: the visitor accepted
+ * cookies and a measurement ID is configured. Otherwise this does nothing.
+ */
+export function trackAnalyticsEvent(eventName, params = {}) {
+  if (typeof window === "undefined") return;
+  if (readStoredConsent() !== "accepted") return;
+
+  applyCookieChoice("accepted");
+  if (typeof window.gtag !== "function") return;
+
+  window.gtag("event", eventName, params);
+}
