@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useId, useMemo, useState } from "react";
 import CookieSettingsButton from "@/components/CookieSettingsButton";
 import GoogleReviewLink from "@/components/GoogleReviewLink";
+import { LiveAppSubdomain, OpenAppLink } from "@/components/LiveAppLink";
 import {
   Sparkles,
   CheckCircle2,
@@ -150,6 +151,7 @@ const PORTFOLIO_PROJECTS = [
     id: 'engineer-portal',
     title: 'Bespoke Engineer Call Form & Field Portal',
     subdomain: 'engineer.synthetixstudio.co.uk',
+    href: 'https://engineer.synthetixstudio.co.uk/engineer-form',
     category: 'Trade & Contractor Portals',
     badge: 'Live Production App',
     clientType: 'Electrical & Field Service Contractors',
@@ -169,6 +171,7 @@ const PORTFOLIO_PROJECTS = [
     id: 'smart-invoice',
     title: 'Smart Invoice Generator',
     subdomain: 'invoice.synthetixstudio.co.uk',
+    href: 'https://invoice.synthetixstudio.co.uk/',
     category: 'Invoice tools',
     badge: 'Live Subdomain App',
     clientType: 'Small Businesses & Sole Traders',
@@ -188,6 +191,7 @@ const PORTFOLIO_PROJECTS = [
     id: 'rams-generator',
     title: 'Site-Specific RAMS Generator',
     subdomain: 'rams.synthetixstudio.co.uk',
+    href: 'https://rams.synthetixstudio.co.uk/',
     category: 'Trade & Contractor Portals',
     badge: 'Compliance SaaS',
     clientType: 'UK Construction & Engineering Firms',
@@ -883,9 +887,7 @@ export default function App() {
                     <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/15 text-purple-300 border border-purple-500/30">
                       {project.badge}
                     </span>
-                    <span className="text-xs font-mono text-cyan-400 bg-cyan-950/50 px-3 py-1 rounded-lg border border-cyan-500/20">
-                      {project.subdomain}
-                    </span>
+                    <LiveAppSubdomain project={project} />
                   </div>
 
                   <h3 className="text-2xl font-bold text-white group-hover:text-purple-300 transition">
@@ -925,24 +927,31 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="px-6 sm:px-8 py-4 bg-[#0B0F1A] border-t border-white/10 flex items-center justify-between">
-                <button
-                  onClick={() => setSelectedProjectModal(project)}
-                  className="text-xs sm:text-sm font-semibold text-purple-300 hover:text-white flex items-center gap-1.5 transition"
-                >
-                  <Eye className="w-4 h-4 text-purple-400" />
-                  <span>Inspect Features & Architecture</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedType(project.id === 'bespoke-websites' ? 'website' : 'portal');
-                    scrollToSection('contact');
-                  }}
-                  className="text-xs sm:text-sm font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
-                >
-                  <span>Build Similar</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+              <div className="bg-[#0B0F1A] border-t border-white/10">
+                {project.href ? (
+                  <div className="px-6 pt-4 sm:px-8">
+                    <OpenAppLink project={project} fullWidth />
+                  </div>
+                ) : null}
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-4 sm:px-8">
+                  <button
+                    onClick={() => setSelectedProjectModal(project)}
+                    className="text-xs sm:text-sm font-semibold text-purple-300 hover:text-white flex items-center gap-1.5 transition"
+                  >
+                    <Eye className="w-4 h-4 text-purple-400" />
+                    <span>Inspect Features & Architecture</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedType(project.id === 'bespoke-websites' ? 'website' : 'portal');
+                      scrollToSection('contact');
+                    }}
+                    className="text-xs sm:text-sm font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+                  >
+                    <span>Build Similar</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -1504,17 +1513,19 @@ export default function App() {
       {selectedProjectModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#101625] border border-purple-500/40 rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-5 shadow-2xl">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <span className="text-xs font-mono text-cyan-400">{selectedProjectModal.subdomain}</span>
-                <h3 className="text-2xl font-bold text-white mt-1">{selectedProjectModal.title}</h3>
+            <div className="space-y-3">
+              <LiveAppSubdomain project={selectedProjectModal} />
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <h3 className="text-2xl font-bold text-white">{selectedProjectModal.title}</h3>
+                </div>
+                <button
+                  onClick={() => setSelectedProjectModal(null)}
+                  className="shrink-0 rounded-lg bg-white/5 p-2 text-slate-300 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-400"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                onClick={() => setSelectedProjectModal(null)}
-                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300"
-              >
-                <X className="w-5 h-5" />
-              </button>
             </div>
 
             <p className="text-sm text-slate-300 leading-relaxed">{selectedProjectModal.description}</p>
@@ -1534,10 +1545,11 @@ export default function App() {
               ))}
             </div>
 
-            <div className="pt-4 flex justify-end gap-3">
+            <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+              <OpenAppLink project={selectedProjectModal} className="sm:mr-auto" />
               <button
                 onClick={() => setSelectedProjectModal(null)}
-                className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-slate-300"
+                className="w-full rounded-xl bg-white/5 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:bg-white/10 sm:w-auto"
               >
                 Close
               </button>
@@ -1546,7 +1558,7 @@ export default function App() {
                   setSelectedProjectModal(null);
                   scrollToSection('contact');
                 }}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-xs font-bold text-white"
+                className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-xs font-bold text-white sm:w-auto"
               >
                 Enquire About a Similar System
               </button>
