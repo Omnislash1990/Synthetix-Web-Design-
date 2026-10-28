@@ -26,17 +26,31 @@ export default function PrivacyPage() {
 
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-white">What you can send us</h2>
-        <p>The project enquiry form asks for:</p>
+        <p>The project enquiry form and the free website check ask for:</p>
         <ul className="list-disc space-y-2 pl-5">
           <li>your name</li>
           <li>your business name, if you add one</li>
           <li>your email address</li>
           <li>your phone number, if you add one</li>
+          <li>the address of your current website, if you add one or request a free website check</li>
           <li>a description of the website or tool you want</li>
           <li>the project type and options you selected in the quote estimator</li>
         </ul>
         <p>
-          We use those details to reply, discuss the work, and prepare a proposal. The lawful reason is that you asked us to take steps before a possible contract. We do not sell personal information, and we do not add you to an advertising list.
+          We use those details to reply, discuss the work, and prepare a proposal. A free website check is a review or a homepage mock-up, with no charge. The lawful reason is that you asked us to take steps before a possible contract. We do not sell personal information, and we do not add you to an advertising list.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-xl font-bold text-white">How an enquiry is delivered</h2>
+        <p>
+          The site sends the enquiry by email to Synthetix Studio at synthetix.studio1@gmail.com. Delivery uses Resend. The reply address on that email is the address you typed, so a reply can come back to you.
+        </p>
+        <p>
+          If email sending is not set up, or the send fails, the site says so and offers an email draft. When a WhatsApp number is configured, it also offers a WhatsApp message. Nothing reaches the studio until you send that draft or WhatsApp message yourself. WhatsApp messages are handled by WhatsApp.
+        </p>
+        <p>
+          The form includes a hidden field to catch automated submissions. Leave it empty. The site also limits how many enquiries one connection can send in a short period.
         </p>
       </section>
 

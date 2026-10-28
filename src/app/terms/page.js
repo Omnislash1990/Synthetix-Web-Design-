@@ -17,7 +17,7 @@ export default function TermsPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-white">The website</h2>
         <p>
-          The examples and prices on this site describe the kind of work the studio offers. A figure from the estimator is a guide, not a fixed quote and not an offer. Sending the enquiry form does not create a contract.
+          The examples and prices on this site describe the kind of work the studio offers. A figure from the estimator is a guide, not a fixed quote and not an offer. Sending the enquiry form does not create a contract. The free website check is a review or a homepage mock-up, with no charge. A care plan offer on the site, when it is shown, covers the first month of a care plan only. It does not change the build prices in the estimator.
         </p>
       </section>
 

@@ -3,8 +3,30 @@
 import Link from "next/link";
 import { useId, useMemo, useState } from "react";
 import CookieSettingsButton from "@/components/CookieSettingsButton";
+import { EnquiryFallback, EnquirySuccess } from "@/components/EnquiryStatus";
+import FreeWebsiteCheck from "@/components/FreeWebsiteCheck";
 import GoogleReviewLink from "@/components/GoogleReviewLink";
+import HoneypotField from "@/components/HoneypotField";
 import { LiveAppSubdomain, OpenAppLink } from "@/components/LiveAppLink";
+import Testimonials from "@/components/Testimonials";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import {
+  ADDON_FEATURES,
+  CARE_PLANS,
+  CONTACT_EMAIL,
+  PROJECT_TYPES,
+  formatPounds,
+} from "@/lib/catalogue";
+import { normalizeWebsite } from "@/lib/contactRequest";
+import { buildEnquiryMailto } from "@/lib/enquiry";
+import {
+  CARE_PLAN_OFFER_LINE,
+  SHOW_CARE_PLAN_OFFER,
+  WHATSAPP_GENERAL_MESSAGE,
+  freeCheckWhatsAppMessage,
+  hasWhatsAppNumber,
+} from "@/lib/siteConfig";
+import { submitEnquiry } from "@/lib/submitEnquiry";
 import {
   Sparkles,
   CheckCircle2,
@@ -227,122 +249,11 @@ const PORTFOLIO_PROJECTS = [
   }
 ];
 
-const CONTACT_EMAIL = "synthetix.studio1@gmail.com";
-
-const PROJECT_TYPES = [
-  {
-    id: 'website',
-    name: 'Business Website',
-    desc: '1–5 pages',
-    basePrice: 795,
-    icon: Globe
-  },
-  {
-    id: 'larger-website',
-    name: 'Larger Website',
-    desc: '6–10 pages',
-    basePrice: 1295,
-    icon: Layers
-  },
-  {
-    id: 'portal',
-    name: 'Trade / Field Service Portal',
-    desc: 'Job sheets, engineer forms, signatures, and automated emails',
-    basePrice: 1950,
-    icon: FileSignature
-  }
-];
-
-const ADDON_FEATURES = [
-  {
-    id: 'auth',
-    label: 'Logins + cloud database',
-    price: 395,
-    detail:
-      'Secure Google or email sign-in and a cloud database for one core record type (e.g. jobs or customers), up to 3 user roles.'
-  },
-  {
-    id: 'pdf',
-    label: 'Digital signatures + branded PDFs',
-    price: 295,
-    detail: 'On-screen signature capture and 1 branded PDF template, emailed automatically.'
-  },
-  {
-    id: 'stripe',
-    label: 'Stripe payments',
-    price: 350,
-    detail: 'One-off card payments or deposits via Stripe Checkout (subscriptions quoted separately).'
-  },
-  {
-    id: 'calculator',
-    label: 'Quote calculator',
-    price: 200,
-    detail: 'A simple instant-price calculator with up to about 10 options.'
-  },
-  { id: 'setup', label: 'Domain, SSL & setup', price: 0, included: true }
-];
-
-const CARE_PLANS = [
-  { id: 'none', label: 'No care plan', price: 0 },
-  {
-    id: 'hosting-care',
-    label: 'Hosting + Care',
-    price: 29,
-    detail: 'Hosting, SSL, backups, uptime and security monitoring.'
-  },
-  {
-    id: 'care-edits',
-    label: 'Care + Edits + SEO report',
-    price: 59,
-    detail:
-      'Everything in £29, plus up to 1 hour of small edits a month and a monthly Google performance report (searches, clicks, rankings for key local terms, speed and errors). The report covers results; it’s not ongoing SEO work.'
-  },
-  {
-    id: 'portal-support',
-    label: 'Portal Support',
-    price: 119,
-    detail:
-      'Everything in £59, plus portal upkeep (logins, database, PDFs, emails), bug fixes, Firebase and Stripe monitoring, up to 2 hours of changes a month and a next-working-day response. New features are quoted separately.'
-  }
-];
-
-function formatPounds(amount) {
-  return `£${amount.toLocaleString("en-GB")}`;
-}
-
-function buildEnquiryMailto({ formState, estimateSummary, selectedAddons }) {
-  const addonLines = selectedAddons
-    .map((id) => ADDON_FEATURES.find((addon) => addon.id === id))
-    .filter(Boolean)
-    .map((addon) =>
-      addon.included
-        ? `- ${addon.label} (included)`
-        : `- ${addon.label} (+${formatPounds(addon.price)})`
-    );
-  const careLine =
-    estimateSummary.carePlan.price > 0
-      ? `${estimateSummary.carePlan.label} (${formatPounds(estimateSummary.carePlan.price)}/mo)`
-      : "None";
-  const subject = `Synthetix Studio enquiry — ${estimateSummary.typeObj.name}`;
-  const body = [
-    `Name: ${formState.name}`,
-    `Business: ${formState.business || "—"}`,
-    `Email: ${formState.email}`,
-    `Phone: ${formState.phone || "—"}`,
-    "",
-    `Package: ${estimateSummary.typeObj.name} (${estimateSummary.typeObj.desc})`,
-    `Build total: ${formatPounds(estimateSummary.buildTotal)}`,
-    `Monthly care: ${careLine}`,
-    "",
-    "Add-ons:",
-    ...(addonLines.length ? addonLines : ["- None"]),
-    "",
-    "Message:",
-    formState.message,
-  ].join("\n");
-
-  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
+const PROJECT_TYPE_ICONS = {
+  website: Globe,
+  "larger-website": Layers,
+  portal: FileSignature,
+};
 
 export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -363,9 +274,12 @@ export default function App() {
     business: '',
     email: '',
     phone: '',
-    message: ''
+    website: '',
+    message: '',
+    companyFax: ''
   });
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formStatus, setFormStatus] = useState('idle');
+  const [formError, setFormError] = useState('');
   const [mailDraftHref, setMailDraftHref] = useState('');
 
   const toggleAddon = (id) => {
@@ -394,12 +308,41 @@ export default function App() {
     return PORTFOLIO_PROJECTS.filter((item) => item.category === activeCategory);
   }, [activeCategory]);
 
-  const handleFormSubmit = (e) => {
+  const quoteWhatsAppMessage = formState.website.trim()
+    ? freeCheckWhatsAppMessage(formState.website)
+    : WHATSAPP_GENERAL_MESSAGE;
+
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const href = buildEnquiryMailto({ formState, estimateSummary, selectedAddons });
-    setMailDraftHref(href);
-    setFormSubmitted(true);
-    window.location.href = href;
+    setFormStatus('sending');
+    setFormError('');
+    const normalizedWebsite = normalizeWebsite(formState.website);
+    const payload = {
+      kind: 'quote',
+      name: formState.name,
+      business: formState.business,
+      email: formState.email,
+      phone: formState.phone,
+      message: formState.message,
+      websiteUrl: normalizedWebsite.value || formState.website.trim(),
+      projectTypeId: selectedType,
+      addonIds: selectedAddons,
+      carePlanId: selectedCare,
+      company_fax: formState.companyFax
+    };
+    setMailDraftHref(buildEnquiryMailto(payload));
+    const result = await submitEnquiry(payload);
+    if (result.status === 'sent') {
+      setFormStatus('sent');
+      return;
+    }
+    if (result.status === 'fallback') {
+      setFormError(result.message);
+      setFormStatus('fallback');
+      return;
+    }
+    setFormError(result.message);
+    setFormStatus('idle');
   };
 
   const scrollToSection = (id) => {
@@ -444,7 +387,7 @@ export default function App() {
           </div>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
+          <nav className="hidden lg:flex items-center gap-5 text-sm font-medium text-slate-300 xl:gap-7">
             <button onClick={() => scrollToSection('services')} className="hover:text-white transition">
               What We Build
             </button>
@@ -463,7 +406,7 @@ export default function App() {
           </nav>
 
           {/* Right Actions */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="hidden xl:inline text-xs font-medium text-slate-300 hover:text-white transition"
@@ -480,7 +423,7 @@ export default function App() {
           </div>
 
           {/* Mobile Hamburger */}
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-lg bg-white/5 border border-white/10 text-slate-200"
@@ -492,7 +435,7 @@ export default function App() {
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#0B0F17] border-b border-white/10 px-4 pt-3 pb-6 space-y-3">
+          <div className="lg:hidden bg-[#0B0F17] border-b border-white/10 px-4 pt-3 pb-6 space-y-3">
             <button
               onClick={() => scrollToSection('services')}
               className="block w-full text-left py-2 text-slate-200 font-medium"
@@ -518,6 +461,12 @@ export default function App() {
               Our Tech Stack
             </button>
             <button
+              onClick={() => scrollToSection('website-check')}
+              className="block w-full text-left py-2 text-slate-200 font-medium"
+            >
+              Free website check
+            </button>
+            <button
               onClick={() => scrollToSection('about')}
               className="block w-full text-left py-2 text-slate-200 font-medium"
             >
@@ -526,7 +475,7 @@ export default function App() {
             <div className="pt-2 flex flex-col gap-2">
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
-                className="block w-full py-2 text-sm font-medium text-purple-200"
+                className="block w-full py-2 text-sm font-medium text-purple-200 break-all"
               >
                 {CONTACT_EMAIL}
               </a>
@@ -536,6 +485,7 @@ export default function App() {
               >
                 Start a Project
               </button>
+              <WhatsAppButton message={WHATSAPP_GENERAL_MESSAGE} variant="solid" className="w-full" />
             </div>
           </div>
         )}
@@ -563,7 +513,7 @@ export default function App() {
             </p>
 
             {/* Primary CTAs */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 pt-2">
               <button
                 onClick={() => scrollToSection('estimator')}
                 className="px-7 py-4 rounded-2xl font-bold text-base text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 hover:from-indigo-500 hover:to-fuchsia-500 shadow-xl shadow-purple-600/30 transition flex items-center justify-center gap-2.5 group"
@@ -572,12 +522,19 @@ export default function App() {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
+                onClick={() => scrollToSection('website-check')}
+                className="px-7 py-4 rounded-2xl font-semibold text-base text-slate-200 bg-white/5 hover:bg-white/10 border border-white/15 transition flex items-center justify-center gap-2"
+              >
+                <span>Free website check</span>
+              </button>
+              <button
                 onClick={() => scrollToSection('portfolio')}
                 className="px-7 py-4 rounded-2xl font-semibold text-base text-slate-200 bg-white/5 hover:bg-white/10 border border-white/15 transition flex items-center justify-center gap-2"
               >
                 <Eye className="w-5 h-5 text-cyan-400" />
                 <span>Explore Live Systems</span>
               </button>
+              <WhatsAppButton message={WHATSAPP_GENERAL_MESSAGE} />
             </div>
 
             {/* Trust / Proof Bar */}
@@ -763,6 +720,12 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      <FreeWebsiteCheck
+        projectTypeId={selectedType}
+        addonIds={selectedAddons}
+        carePlanId={selectedCare}
+      />
 
       {/* SERVICES SECTION ("WHAT WE BUILD") */}
       <section id="services" className="relative z-10 py-20 bg-[#0B0F19] border-y border-white/10">
@@ -958,6 +921,8 @@ export default function App() {
         </div>
       </section>
 
+      <Testimonials />
+
       {/* INTERACTIVE PROJECT COST & TIMELINE ESTIMATOR */}
       <section id="estimator" className="relative z-10 py-20 bg-[#0B0F19] border-y border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -986,7 +951,7 @@ export default function App() {
                 </h3>
                 <div className="grid sm:grid-cols-3 gap-4">
                   {PROJECT_TYPES.map((type) => {
-                    const Icon = type.icon;
+                    const Icon = PROJECT_TYPE_ICONS[type.id];
                     const active = selectedType === type.id;
                     return (
                       <button
@@ -1011,16 +976,17 @@ export default function App() {
                     );
                   })}
                 </div>
-                <div className="mt-5 pt-5 border-t border-white/10">
+                <div className="mt-5 pt-5 border-t border-white/10 space-y-3">
                   <a
                     href="#contact"
                     className="text-base font-semibold text-purple-300 hover:text-white underline underline-offset-4"
                   >
-                    Need something custom? Let&apos;s talk
+                    Need something custom? Send a message
                   </a>
-                  <p className="text-sm text-slate-400 mt-2">
+                  <p className="text-sm text-slate-400">
                     Custom jobs are quoted case by case after a paid scoping session.
                   </p>
+                  <WhatsAppButton message={WHATSAPP_GENERAL_MESSAGE} variant="solid" className="w-full sm:w-auto" />
                 </div>
               </div>
 
@@ -1082,6 +1048,9 @@ export default function App() {
                   </span>
                   <span>Choose a Monthly Care Plan</span>
                 </h3>
+                {SHOW_CARE_PLAN_OFFER ? (
+                  <p className="mb-4 text-sm leading-relaxed text-fuchsia-200">{CARE_PLAN_OFFER_LINE}</p>
+                ) : null}
                 <div className="grid sm:grid-cols-2 gap-3.5">
                   {CARE_PLANS.map((plan) => {
                     const active = selectedCare === plan.id;
@@ -1160,6 +1129,9 @@ export default function App() {
                 </div>
               </div>
 
+              {SHOW_CARE_PLAN_OFFER ? (
+                <p className="mb-4 text-sm leading-relaxed text-fuchsia-200">{CARE_PLAN_OFFER_LINE}</p>
+              ) : null}
               <button
                 onClick={() => scrollToSection('contact')}
                 className="w-full py-4 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 hover:from-indigo-500 hover:to-fuchsia-500 shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2"
@@ -1313,17 +1285,18 @@ export default function App() {
                   Let’s Build Your Website
                 </h2>
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  Tell us a little about your business and what you want to achieve. Submitting opens an email draft that includes the package, add-ons, and care plan you selected.
+                  Tell us a little about your business and what you want to achieve. The form sends your enquiry, including the package, add-ons, and care plan you selected, and your current website if you add one.
                 </p>
 
                 <div className="space-y-3 pt-2 text-sm text-slate-300">
                   <a
                     href={`mailto:${CONTACT_EMAIL}`}
-                    className="flex items-center gap-3 text-white hover:text-purple-200 transition"
+                    className="flex items-center gap-3 text-white hover:text-purple-200 transition min-w-0"
                   >
-                    <Mail className="w-4 h-4 text-purple-400" />
-                    <span>{CONTACT_EMAIL}</span>
+                    <Mail className="w-4 h-4 shrink-0 text-purple-400" />
+                    <span className="break-all">{CONTACT_EMAIL}</span>
                   </a>
+                  <WhatsAppButton message={quoteWhatsAppMessage} variant="solid" className="w-full sm:w-auto" />
                   <div className="flex items-center gap-3">
                     <Globe className="w-4 h-4 text-purple-400" />
                     <span>synthetixstudio.co.uk</span>
@@ -1354,33 +1327,35 @@ export default function App() {
               </div>
 
               {/* Right Inquiry Form */}
-              <div className="lg:col-span-7">
-                {formSubmitted ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center p-8 rounded-2xl bg-purple-500/10 border border-purple-500/30 space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center">
-                      <Mail className="w-9 h-9 text-purple-300" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-white">Email draft ready</h3>
-                    <p className="text-sm text-slate-300 max-w-md">
-                      Your email app should have opened with this enquiry addressed to{" "}
-                      <strong className="text-white">{CONTACT_EMAIL}</strong>. Send that email to deliver it. Nothing reaches Synthetix Studio until you send the draft.
+              <div className="lg:col-span-7 min-w-0">
+                {formStatus === "sent" ? (
+                  <EnquirySuccess
+                    title="Enquiry sent"
+                    onReset={() => {
+                      setFormStatus("idle");
+                      setFormError("");
+                    }}
+                  >
+                    <p>
+                      Your enquiry has been sent to Synthetix Studio at{" "}
+                      <strong className="break-all text-white">{CONTACT_EMAIL}</strong>. We will reply by email.
                     </p>
-                    <a
-                      href={mailDraftHref || `mailto:${CONTACT_EMAIL}`}
-                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-xs font-bold text-white"
-                    >
-                      Open the email draft again
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => setFormSubmitted(false)}
-                      className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-white transition"
-                    >
-                      Edit enquiry
-                    </button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleFormSubmit} className="space-y-4">
+                  </EnquirySuccess>
+                ) : null}
+                {formStatus === "fallback" ? (
+                  <EnquiryFallback
+                    message={formError}
+                    mailtoHref={mailDraftHref || `mailto:${CONTACT_EMAIL}`}
+                    whatsAppMessage={quoteWhatsAppMessage}
+                    onEdit={() => setFormStatus("idle")}
+                  />
+                ) : null}
+                {formStatus === "idle" || formStatus === "sending" ? (
+                  <form onSubmit={handleFormSubmit} className="relative space-y-4">
+                    <HoneypotField
+                      value={formState.companyFax}
+                      onChange={(value) => setFormState({ ...formState, companyFax: value })}
+                    />
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-semibold text-slate-300 mb-1.5">
@@ -1438,6 +1413,25 @@ export default function App() {
                     </div>
 
                     <div>
+                      <label htmlFor="enquiry-website" className="block text-xs font-semibold text-slate-300 mb-1.5">
+                        Current website
+                      </label>
+                      <input
+                        id="enquiry-website"
+                        type="text"
+                        inputMode="url"
+                        autoComplete="url"
+                        value={formState.website}
+                        onChange={(e) => setFormState({ ...formState, website: e.target.value })}
+                        placeholder="www.yourbusiness.co.uk"
+                        className="w-full px-4 py-3 rounded-xl bg-[#070A11] border border-white/15 text-sm text-white focus:outline-none focus:border-purple-500"
+                      />
+                      <p className="mt-1.5 text-xs text-slate-500">
+                        Optional. Add it if you would like a free website check or a homepage mock-up.
+                      </p>
+                    </div>
+
+                    <div>
                       <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                         Tell Us About Your Website *
                       </label>
@@ -1451,22 +1445,28 @@ export default function App() {
                       />
                     </div>
 
+                    {formError ? (
+                      <p className="text-sm text-amber-200" role="alert">
+                        {formError}
+                      </p>
+                    ) : null}
                     <button
                       type="submit"
-                      className="w-full py-4 rounded-xl font-bold text-base text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 hover:from-indigo-500 hover:to-fuchsia-500 shadow-xl shadow-purple-600/25 transition flex items-center justify-center gap-2"
+                      disabled={formStatus === "sending"}
+                      className="w-full py-4 rounded-xl font-bold text-base text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 hover:from-indigo-500 hover:to-fuchsia-500 shadow-xl shadow-purple-600/25 transition flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <Send className="w-4 h-4" />
-                      <span>Open email draft</span>
+                      <span>{formStatus === "sending" ? "Sending..." : "Send enquiry"}</span>
                     </button>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      This opens your email app with the enquiry addressed to {CONTACT_EMAIL}, including the price options you selected. The message is delivered only when you send that email. By sending it you agree to the{" "}
+                      {`The form emails Synthetix Studio at ${CONTACT_EMAIL}. If that send fails, this page gives you an email draft${hasWhatsAppNumber() ? " and a WhatsApp button" : ""}. A failed send is not delivered until you send it yourself. By sending an enquiry you agree to the `}
                       <Link href="/privacy" className="text-purple-300 hover:text-white underline underline-offset-2">
                         privacy policy
                       </Link>
                       .
                     </p>
                   </form>
-                )}
+                ) : null}
               </div>
             </div>
           </div>
@@ -1498,10 +1498,11 @@ export default function App() {
               <CookieSettingsButton />
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
-                className="text-purple-300 hover:text-purple-200 font-semibold"
+                className="text-purple-300 hover:text-purple-200 font-semibold break-all"
               >
                 {CONTACT_EMAIL}
               </a>
+              <WhatsAppButton message={WHATSAPP_GENERAL_MESSAGE} variant="link" />
               <span>synthetixstudio.co.uk</span>
             </div>
             <GoogleReviewLink compact />
