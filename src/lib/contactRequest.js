@@ -81,7 +81,8 @@ export function validateEnquiry(body) {
     return { ok: true, honeypot: true };
   }
 
-  const kind = body.kind === "website-check" ? "website-check" : "quote";
+  const kind =
+    body.kind === "website-check" ? "website-check" : body.kind === "app-idea" ? "app-idea" : "quote";
 
   const name = cleanLine(body.name, 120);
   if (name.error || !name.value) {
@@ -130,8 +131,14 @@ export function validateEnquiry(body) {
       message: message.error === "long" ? "That message is too long." : "Check the message and try again.",
     };
   }
-  if (kind === "quote" && !message.value) {
-    return { ok: false, message: "Tell us a little about the website you want." };
+  if ((kind === "quote" || kind === "app-idea") && !message.value) {
+    return {
+      ok: false,
+      message:
+        kind === "app-idea"
+          ? "Tell us a little about the app idea."
+          : "Tell us a little about the website you want.",
+    };
   }
 
   if (typeof body.projectTypeId !== "string" || !PROJECT_TYPES.some((type) => type.id === body.projectTypeId)) {

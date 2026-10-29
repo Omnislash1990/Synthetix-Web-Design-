@@ -20,6 +20,8 @@ export const WHATSAPP_FREE_CHECK_MESSAGE =
 export const WHATSAPP_GENERAL_MESSAGE =
   "Hi Synthetix Studio, I'd like to ask about a website for my business.";
 
+export const WHATSAPP_APP_IDEA_MESSAGE = "Hi Synthetix Studio, I have an app idea: ";
+
 export function whatsAppNumber() {
   return (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/\D/g, "");
 }

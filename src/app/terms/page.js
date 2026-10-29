@@ -1,10 +1,23 @@
 import Link from "next/link";
 import LegalDocument from "@/components/LegalDocument";
 
+const pageTitle = "Terms | Synthetix Studio";
+const pageDescription =
+  "Terms for using the Synthetix Studio website and for project work agreed with the studio.";
+
 export const metadata = {
-  title: "Terms | Synthetix Studio",
-  description:
-    "Terms for using the Synthetix Studio website and for project work agreed with the studio.",
+  title: pageTitle,
+  description: pageDescription,
+  alternates: { canonical: "https://www.synthetixstudio.co.uk/terms" },
+  openGraph: {
+    type: "website",
+    url: "https://www.synthetixstudio.co.uk/terms",
+    siteName: "Synthetix Studio",
+    locale: "en_GB",
+    title: pageTitle,
+    description: pageDescription,
+  },
+  twitter: { card: "summary", title: pageTitle, description: pageDescription },
 };
 
 export default function TermsPage() {
@@ -17,7 +30,7 @@ export default function TermsPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-white">The website</h2>
         <p>
-          The examples and prices on this site describe the kind of work the studio offers. A figure from the estimator is a guide, not a fixed quote and not an offer. Sending the enquiry form does not create a contract. The free website check is a review or a homepage mock-up, with no charge. A care plan offer on the site, when it is shown, covers the first month of a care plan only. It does not change the build prices in the estimator.
+          The examples and prices on this site describe the kind of work the studio offers. A figure from the estimator is a guide, not a fixed quote and not an offer. Sending the enquiry form does not create a contract. The free website check is a review or a homepage mock-up, with no charge. An app idea enquiry is a free chat about whether the idea is doable. It does not set a price. A care plan offer on the site, when it is shown, covers the first month of a care plan only. It does not change the build prices in the estimator.
         </p>
       </section>
 

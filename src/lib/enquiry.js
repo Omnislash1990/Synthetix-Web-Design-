@@ -32,7 +32,16 @@ export function enquirySubject({ kind, typeName, websiteUrl }) {
     const site = websiteUrl ? ` — ${oneLine(websiteUrl)}` : "";
     return `Free website check${site}`.slice(0, 180);
   }
+  if (kind === "app-idea") {
+    return "Synthetix Studio enquiry — App idea";
+  }
   return `Synthetix Studio enquiry — ${oneLine(typeName) || "website"}`.slice(0, 180);
+}
+
+function enquiryTypeLine(kind) {
+  if (kind === "website-check") return "Enquiry type: Free website check";
+  if (kind === "app-idea") return "Enquiry type: App idea";
+  return "Enquiry type: Project quote";
 }
 
 export function buildEnquiryText({
@@ -60,12 +69,24 @@ export function buildEnquiryText({
       ? `${carePlan.label} (${formatPounds(carePlan.price)}/mo)`
       : "None";
   const lines = [
-    kind === "website-check" ? "Enquiry type: Free website check" : "Enquiry type: Project quote",
+    enquiryTypeLine(kind),
     `Name: ${name || "—"}`,
     `Business: ${business || "—"}`,
     `Email: ${email || "—"}`,
     `Phone: ${phone || "—"}`,
     `Current website: ${websiteUrl || "—"}`,
+  ];
+  if (kind === "app-idea") {
+    lines.push(
+      "",
+      "Message:",
+      message || "—",
+      "",
+      "Note: This is a chat about an app idea, not a priced package from the estimator.",
+    );
+    return lines.join("\n");
+  }
+  lines.push(
     "",
     `Package: ${typeObj.name} (${typeObj.desc})`,
     `Build total: ${formatPounds(buildTotal)}`,
@@ -76,7 +97,7 @@ export function buildEnquiryText({
     "",
     "Message:",
     message || "—",
-  ];
+  );
   if (SHOW_CARE_PLAN_OFFER) {
     lines.push("", CARE_PLAN_OFFER_LINE);
   }

@@ -1,10 +1,23 @@
 import Link from "next/link";
 import LegalDocument from "@/components/LegalDocument";
 
+const pageTitle = "Cookies | Synthetix Studio";
+const pageDescription =
+  "How Synthetix Studio uses cookies, and how to accept or reject analytics on this website.";
+
 export const metadata = {
-  title: "Cookies | Synthetix Studio",
-  description:
-    "How Synthetix Studio uses cookies, and how to accept or reject analytics on this website.",
+  title: pageTitle,
+  description: pageDescription,
+  alternates: { canonical: "https://www.synthetixstudio.co.uk/cookies" },
+  openGraph: {
+    type: "website",
+    url: "https://www.synthetixstudio.co.uk/cookies",
+    siteName: "Synthetix Studio",
+    locale: "en_GB",
+    title: pageTitle,
+    description: pageDescription,
+  },
+  twitter: { card: "summary", title: pageTitle, description: pageDescription },
 };
 
 export default function CookiesPage() {
