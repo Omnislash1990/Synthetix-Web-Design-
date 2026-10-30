@@ -22,6 +22,7 @@ import { buildEnquiryMailto } from "@/lib/enquiry";
 import {
   CARE_PLAN_OFFER_LINE,
   SHOW_CARE_PLAN_OFFER,
+  WHATSAPP_APP_IDEA_MESSAGE,
   WHATSAPP_GENERAL_MESSAGE,
   freeCheckWhatsAppMessage,
   hasWhatsAppNumber,
@@ -249,6 +250,33 @@ const PORTFOLIO_PROJECTS = [
   }
 ];
 
+const LIVE_APP_EXAMPLES = [
+  {
+    id: "smart-invoice",
+    title: "Invoice Generator",
+    host: "invoice.synthetixstudio.co.uk",
+    href: "https://invoice.synthetixstudio.co.uk/",
+    description:
+      "We built this and we run it. It turns job notes into an invoice you can print or save.",
+  },
+  {
+    id: "rams-generator",
+    title: "RAMS Generator",
+    host: "rams.synthetixstudio.co.uk",
+    href: "https://rams.synthetixstudio.co.uk/",
+    description:
+      "We built this and we run it. It puts together a site-specific risk assessment and method statement.",
+  },
+  {
+    id: "engineer-portal",
+    title: "Engineer Call Form",
+    host: "engineer.synthetixstudio.co.uk/engineer-form",
+    href: "https://engineer.synthetixstudio.co.uk/engineer-form",
+    description:
+      "We built this and we run it. It logs a call, records the hours and materials, and takes a signature on site.",
+  },
+];
+
 const PROJECT_TYPE_ICONS = {
   website: Globe,
   "larger-website": Layers,
@@ -276,7 +304,8 @@ export default function App() {
     phone: '',
     website: '',
     message: '',
-    companyFax: ''
+    companyFax: '',
+    enquiryType: 'quote'
   });
   const [formStatus, setFormStatus] = useState('idle');
   const [formError, setFormError] = useState('');
@@ -318,7 +347,7 @@ export default function App() {
     setFormError('');
     const normalizedWebsite = normalizeWebsite(formState.website);
     const payload = {
-      kind: 'quote',
+      kind: formState.enquiryType === 'app-idea' ? 'app-idea' : 'quote',
       name: formState.name,
       business: formState.business,
       email: formState.email,
@@ -348,6 +377,19 @@ export default function App() {
   const scrollToSection = (id) => {
     setMobileMenuOpen(false);
     const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const openContact = (enquiryType) => {
+    setMobileMenuOpen(false);
+    if (enquiryType) {
+      setFormState((current) => ({ ...current, enquiryType }));
+      if (formStatus === 'sent' || formStatus === 'fallback') {
+        setFormStatus('idle');
+        setFormError('');
+      }
+    }
+    const el = document.getElementById('contact');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -387,20 +429,23 @@ export default function App() {
           </div>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-5 text-sm font-medium text-slate-300 xl:gap-7">
-            <button onClick={() => scrollToSection('services')} className="hover:text-white transition">
+          <nav className="hidden lg:flex items-center gap-3 text-[13px] font-medium text-slate-300 xl:gap-6 xl:text-sm">
+            <button onClick={() => scrollToSection('services')} className="hover:text-white transition whitespace-nowrap">
               What We Build
             </button>
-            <button onClick={() => scrollToSection('portfolio')} className="hover:text-white transition">
+            <button onClick={() => scrollToSection('app-ideas')} className="hover:text-white transition whitespace-nowrap">
+              App ideas
+            </button>
+            <button onClick={() => scrollToSection('portfolio')} className="hover:text-white transition whitespace-nowrap">
               Live Work
             </button>
-            <button onClick={() => scrollToSection('estimator')} className="hover:text-white transition">
+            <button onClick={() => scrollToSection('estimator')} className="hover:text-white transition whitespace-nowrap">
               Instant Quote
             </button>
-            <button onClick={() => scrollToSection('stack')} className="hover:text-white transition">
+            <button onClick={() => scrollToSection('stack')} className="hover:text-white transition whitespace-nowrap">
               Why Synthetix
             </button>
-            <button onClick={() => scrollToSection('about')} className="hover:text-white transition">
+            <button onClick={() => scrollToSection('about')} className="hover:text-white transition whitespace-nowrap">
               About
             </button>
           </nav>
@@ -441,6 +486,12 @@ export default function App() {
               className="block w-full text-left py-2 text-slate-200 font-medium"
             >
               What We Build
+            </button>
+            <button
+              onClick={() => scrollToSection('app-ideas')}
+              className="block w-full text-left py-2 text-slate-200 font-medium"
+            >
+              App ideas
             </button>
             <button
               onClick={() => scrollToSection('portfolio')}
@@ -509,7 +560,16 @@ export default function App() {
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-300 max-w-2xl leading-relaxed font-normal">
-              <strong className="text-white font-semibold">Synthetix Studio</strong> is a Birmingham web design studio. We build company websites, trade job portals, and invoice tools for businesses in Birmingham, the West Midlands, and beyond.
+              <strong className="text-white font-semibold">Synthetix Studio</strong> is a Birmingham web design studio. We work with businesses of any size, start-ups, and anyone with an idea, in Birmingham, the West Midlands, and beyond.
+            </p>
+            <p className="text-sm font-semibold text-purple-200">
+              <button
+                type="button"
+                onClick={() => scrollToSection('app-ideas')}
+                className="underline decoration-purple-400/60 underline-offset-4 transition hover:text-white"
+              >
+                Websites and custom apps
+              </button>
             </p>
 
             {/* Primary CTAs */}
@@ -555,7 +615,7 @@ export default function App() {
               </div>
               <div>
                 <div className="text-2xl sm:text-3xl font-extrabold text-cyan-400">Live Apps</div>
-                <div className="text-xs text-slate-400 mt-0.5">Portals, RAMS & Invoicing</div>
+                <div className="text-xs text-slate-400 mt-0.5">Examples we built and run</div>
               </div>
             </div>
           </div>
@@ -737,9 +797,19 @@ export default function App() {
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
               Everything You Need to Look Professional & Save Hours Every Week
             </h2>
-            <p className="text-slate-400 text-base sm:text-lg">
-              Birmingham trades and West Midlands businesses use these sites and tools to look professional and cut the evening admin. We build each one end to end.
+            <p className="text-sm font-semibold tracking-wide text-purple-200">
+              Websites and custom apps
             </p>
+            <p className="text-slate-400 text-base sm:text-lg">
+              For businesses of any size, start-ups, and anyone with an idea. We build each project end to end.
+            </p>
+            <button
+              type="button"
+              onClick={() => scrollToSection('app-ideas')}
+              className="text-sm font-semibold text-purple-300 underline underline-offset-4 transition hover:text-white"
+            >
+              Got an app idea?
+            </button>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -753,9 +823,9 @@ export default function App() {
               },
               {
                 icon: FileSignature,
-                title: 'Trade & Field Web Portals',
-                desc: 'Replace paper pads and spreadsheets with custom engineer call forms, RAMS builders, and digital sign-off sheets.',
-                bullets: ['Touch Signature Capture', 'Automatic Hour & Cost Maths', 'Instant Branded PDF & Emails'],
+                title: 'Custom apps and tools',
+                desc: 'A custom app or an internal tool for the job you have in mind. Businesses of any size, start-ups, and anyone with an idea can start with a free chat.',
+                bullets: ['Shaped around one clear job', 'Works on a phone or a computer', 'Talk it through before any build'],
                 color: 'from-purple-500 to-fuchsia-500'
               },
               {
@@ -799,6 +869,65 @@ export default function App() {
         </div>
       </section>
 
+      <section id="app-ideas" className="relative z-10 scroll-mt-24 py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-12 max-w-3xl space-y-4 text-center">
+            <span className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-400">
+              Custom apps
+            </span>
+            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Got an app idea?</h2>
+            <p className="text-base leading-relaxed text-slate-300 sm:text-lg">
+              Web design is what most people come to us for. We also build custom apps for businesses of any size, start-ups, and anyone with an idea. These three are examples of what we have built. Synthetix Studio built them, and we run them.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {LIVE_APP_EXAMPLES.map((app) => (
+              <article
+                key={app.id}
+                className="flex min-w-0 flex-col justify-between rounded-3xl border border-white/10 bg-[#101625] p-6 shadow-xl"
+              >
+                <div className="min-w-0">
+                  <h3 className="text-xl font-bold text-white">{app.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-300">{app.description}</p>
+                </div>
+                <div className="mt-6 min-w-0 space-y-3">
+                  <p className="font-mono text-xs leading-relaxed text-cyan-300/90 [overflow-wrap:anywhere]">
+                    {app.host.includes("/") ? (
+                      <>
+                        {app.host.slice(0, app.host.lastIndexOf("/"))}
+                        <wbr />
+                        {app.host.slice(app.host.lastIndexOf("/"))}
+                      </>
+                    ) : (
+                      app.host
+                    )}
+                  </p>
+                  <OpenAppLink project={app} fullWidth />
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="mx-auto mt-12 max-w-3xl rounded-3xl border border-purple-500/30 bg-[#111726] p-6 text-center sm:p-8">
+            <p className="text-base leading-relaxed text-slate-200">
+              Share your idea and we will have a free chat about whether it is doable.
+            </p>
+            <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <WhatsAppButton message={WHATSAPP_APP_IDEA_MESSAGE} variant="solid" className="w-full sm:w-auto" />
+              <button
+                type="button"
+                onClick={() => openContact('app-idea')}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-purple-600/25 transition hover:from-indigo-500 hover:to-fuchsia-500 sm:w-auto"
+              >
+                <span>Use the contact form</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* LIVE PORTFOLIO SECTION */}
       <section id="portfolio" className="relative z-10 py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
@@ -810,7 +939,7 @@ export default function App() {
               Built & Deployed by Synthetix Studio
             </h2>
             <p className="text-slate-400 mt-2 max-w-2xl">
-              Real web applications, contractor portals, and business platforms engineered in-house and running live on custom domains.
+              Websites and custom apps we have built and run, live on their own addresses.
             </p>
           </div>
 
@@ -1250,10 +1379,10 @@ export default function App() {
           </div>
           <div className="lg:col-span-7 space-y-4 text-slate-300 leading-relaxed">
             <p>
-              Synthetix Studio is a Birmingham web design studio. You speak directly with the person who designs and builds the site, from the first conversation through to launch.
+              Synthetix Studio is a Birmingham web design studio. You speak directly with the person who designs and builds the work, from the first conversation through to launch.
             </p>
             <p>
-              The studio works with trades and small businesses across Birmingham and the West Midlands, and with clients elsewhere in the UK who want a custom website instead of a template.
+              We work with businesses of any size, start-ups, and anyone with an idea, in Birmingham, the West Midlands, and further afield.
             </p>
             <button
               onClick={() => scrollToSection('contact')}
@@ -1282,10 +1411,12 @@ export default function App() {
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-                  Let’s Build Your Website
+                  {formState.enquiryType === 'app-idea' ? 'Tell us the app idea' : 'Let’s Build Your Website'}
                 </h2>
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  Tell us a little about your business and what you want to achieve. The form sends your enquiry, including the package, add-ons, and care plan you selected, and your current website if you add one.
+                  {formState.enquiryType === 'app-idea'
+                    ? 'Share the idea in a few lines. We will have a free chat about whether it is doable. This is for businesses of any size, start-ups, and anyone with an idea.'
+                    : 'Tell us a little about your business and what you want to achieve. The form sends your enquiry, including the package, add-ons, and care plan you selected, and your current website if you add one.'}
                 </p>
 
                 <div className="space-y-3 pt-2 text-sm text-slate-300">
@@ -1308,22 +1439,23 @@ export default function App() {
                   <GoogleReviewLink />
                 </div>
 
-                {/* Selected Spec Pill Box */}
-                <div className="p-4 rounded-2xl bg-[#080C15] border border-white/10 space-y-2">
-                  <div className="text-xs font-semibold text-purple-300 uppercase tracking-wider">
-                    Selected estimate:
+                {formState.enquiryType === "app-idea" ? null : (
+                  <div className="p-4 rounded-2xl bg-[#080C15] border border-white/10 space-y-2">
+                    <div className="text-xs font-semibold text-purple-300 uppercase tracking-wider">
+                      Selected estimate:
+                    </div>
+                    <div className="text-sm font-bold text-white">
+                      {estimateSummary.typeObj.name} ({formatPounds(estimateSummary.buildTotal)})
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      {estimateSummary.carePlan.price > 0
+                        ? `${estimateSummary.carePlan.label} · ${formatPounds(estimateSummary.carePlan.price)}/mo`
+                        : "No monthly care plan"}
+                      {" · "}
+                      {selectedAddons.length} add-on{selectedAddons.length === 1 ? "" : "s"}
+                    </div>
                   </div>
-                  <div className="text-sm font-bold text-white">
-                    {estimateSummary.typeObj.name} ({formatPounds(estimateSummary.buildTotal)})
-                  </div>
-                  <div className="text-xs text-slate-400">
-                    {estimateSummary.carePlan.price > 0
-                      ? `${estimateSummary.carePlan.label} · ${formatPounds(estimateSummary.carePlan.price)}/mo`
-                      : "No monthly care plan"}
-                    {" · "}
-                    {selectedAddons.length} add-on{selectedAddons.length === 1 ? "" : "s"}
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Right Inquiry Form */}
@@ -1356,6 +1488,25 @@ export default function App() {
                       value={formState.companyFax}
                       onChange={(value) => setFormState({ ...formState, companyFax: value })}
                     />
+                    <div>
+                      <label htmlFor="enquiry-type" className="block text-xs font-semibold text-slate-300 mb-1.5">
+                        Enquiry type
+                      </label>
+                      <select
+                        id="enquiry-type"
+                        value={formState.enquiryType}
+                        onChange={(e) => setFormState({ ...formState, enquiryType: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl bg-[#070A11] border border-white/15 text-sm text-white focus:outline-none focus:border-purple-500"
+                      >
+                        <option value="quote">Website project</option>
+                        <option value="app-idea">App idea</option>
+                      </select>
+                      <p className="mt-1.5 text-xs text-slate-500">
+                        {formState.enquiryType === 'app-idea'
+                          ? 'Tell us the idea and we will have a free chat about whether it is doable.'
+                          : 'Website project uses the package, add-ons, and care plan selected above.'}
+                      </p>
+                    </div>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-semibold text-slate-300 mb-1.5">
@@ -1432,15 +1583,20 @@ export default function App() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                        Tell Us About Your Website *
+                      <label htmlFor="enquiry-message" className="block text-xs font-semibold text-slate-300 mb-1.5">
+                        {formState.enquiryType === 'app-idea' ? 'Tell us about your app idea *' : 'Tell us about your website *'}
                       </label>
                       <textarea
+                        id="enquiry-message"
                         rows={4}
                         required
                         value={formState.message}
                         onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                        placeholder="Need a new company website, an engineer job sheet portal, or a custom quote calculator? Let us know..."
+                        placeholder={
+                          formState.enquiryType === 'app-idea'
+                            ? 'What should it do, and who is it for?'
+                            : 'Tell us about the website you want.'
+                        }
                         className="w-full px-4 py-3 rounded-xl bg-[#070A11] border border-white/15 text-sm text-white focus:outline-none focus:border-purple-500"
                       />
                     </div>
@@ -1483,6 +1639,9 @@ export default function App() {
           </div>
           <div className="flex w-full min-w-0 flex-col items-center gap-3 lg:flex-1 lg:items-end">
             <div className="flex max-w-full flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:justify-end">
+              <button onClick={() => scrollToSection('app-ideas')} className="hover:text-white transition">
+                App ideas
+              </button>
               <button onClick={() => scrollToSection('about')} className="hover:text-white transition">
                 About
               </button>

@@ -1,9 +1,22 @@
 import Link from "next/link";
 import LegalDocument from "@/components/LegalDocument";
 
+const pageTitle = "Privacy Policy | Synthetix Studio";
+const pageDescription = "How Synthetix Studio uses information you send through an enquiry.";
+
 export const metadata = {
-  title: "Privacy Policy | Synthetix Studio",
-  description: "How Synthetix Studio uses information you send through an enquiry.",
+  title: pageTitle,
+  description: pageDescription,
+  alternates: { canonical: "https://www.synthetixstudio.co.uk/privacy" },
+  openGraph: {
+    type: "website",
+    url: "https://www.synthetixstudio.co.uk/privacy",
+    siteName: "Synthetix Studio",
+    locale: "en_GB",
+    title: pageTitle,
+    description: pageDescription,
+  },
+  twitter: { card: "summary", title: pageTitle, description: pageDescription },
 };
 
 export default function PrivacyPage() {
@@ -34,6 +47,7 @@ export default function PrivacyPage() {
           <li>your phone number, if you add one</li>
           <li>the address of your current website, if you add one or request a free website check</li>
           <li>a description of the website or tool you want</li>
+          <li>whether you are asking about a website project or an app idea</li>
           <li>the project type and options you selected in the quote estimator</li>
         </ul>
         <p>

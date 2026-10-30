@@ -14,10 +14,31 @@ const geistMono = Geist_Mono({
 
 const googleSiteVerification = (process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "").trim();
 
+const siteUrl = "https://www.synthetixstudio.co.uk";
+const siteTitle = "Synthetix Studio | Birmingham Web Design and App Development";
+const siteDescription =
+  "Birmingham web design and app development from Synthetix Studio. Websites and custom apps for businesses of any size, start-ups, and anyone with an idea.";
+
 export const metadata = {
-  title: "Synthetix Studio | Birmingham Web Design",
-  description:
-    "Bespoke business websites, trade portals, and invoice tools from Synthetix Studio, a Birmingham web design studio working with companies across the West Midlands.",
+  metadataBase: new URL(siteUrl),
+  title: siteTitle,
+  description: siteDescription,
+  alternates: {
+    canonical: siteUrl,
+  },
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "Synthetix Studio",
+    locale: "en_GB",
+    title: siteTitle,
+    description: siteDescription,
+  },
+  twitter: {
+    card: "summary",
+    title: siteTitle,
+    description: siteDescription,
+  },
   ...(googleSiteVerification
     ? { verification: { google: googleSiteVerification } }
     : {}),
