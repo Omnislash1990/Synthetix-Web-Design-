@@ -10,6 +10,7 @@ import HoneypotField from "@/components/HoneypotField";
 import { LiveAppSubdomain, OpenAppLink } from "@/components/LiveAppLink";
 import Testimonials from "@/components/Testimonials";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import WhatsIncluded from "@/components/WhatsIncluded";
 import {
   ADDON_FEATURES,
   CARE_PLANS,
@@ -1275,6 +1276,8 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      <WhatsIncluded />
 
       {/* WHY SYNTHETIX STUDIO / MODERN STACK COMPARISON */}
       <section id="stack" className="relative z-10 py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
